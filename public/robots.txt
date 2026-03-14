@@ -1,0 +1,36 @@
+# robots.txt for Switch Point - www.sw-point.com
+
+# Allow all search engines to crawl the entire site
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.sw-point.com/sitemap.xml
+
+# Crawl-delay to be respectful to server resources
+Crawl-delay: 1
+
+# Block common bot paths (if you have admin areas in the future)
+# Uncomment if needed:
+# Disallow: /admin/
+# Disallow: /api/
+# Disallow: /private/
+
+# Allow specific search engine bots with no restrictions
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
