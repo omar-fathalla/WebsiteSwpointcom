@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, X, CheckCircle, Zap, Target, Layers, Code2, ExternalLink, Globe, Monitor, Users, QrCode, BarChart2, MapPin, Bell, Calendar, Star, FileText, Truck, Package, Navigation, Route, Camera } from "lucide-react";
-import ukTransportImg from "figma:asset/13a4b0cf7ad257b579cf8be7d45e9f3fb84fc411.png";
+const ukTransportImg = "https://images.unsplash.com/photo-1551471698-c7787ff6b7ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxVSyUyMHRyYW5zcG9ydCUyMG1vdmluZyUyMHRydWNrJTIwcmVtb3ZhbHN8ZW58MXx8fHwxNzczNTMzMzU5fDA&ixlib=rb-4.1.0&q=80&w=1080";
 
 interface ArchLayer {
   label: string;

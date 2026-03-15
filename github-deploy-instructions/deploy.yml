@@ -1,3 +1,6 @@
+# .github/workflows/deploy.yml
+# This file should be placed at: .github/workflows/deploy.yml in your repo
+
 name: Deploy to GitHub Pages
 
 on:
