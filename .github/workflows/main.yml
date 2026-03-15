@@ -1,21 +1,3 @@
-Skip to content
-omar-fathalla
-WebsiteSwpointcom
-Repository navigation
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-Insights
-Settings
-Deploy to GitHub Pages
-Add GitHub Actions workflow for GitHub Pages deployment #2
-All jobs
-Run details
-Workflow file for this run
-.github/workflows/main.yml at 5a5e24d
 name: Deploy to GitHub Pages
 
 on:
@@ -52,9 +34,11 @@ jobs:
 
       - name: Copy SEO files to dist
         run: |
-          cp public/sitemap.xml dist/
-          cp public/robots.txt dist/
-          cp dist/index.html dist/404.html
+          cp public/sitemap.xml dist/ 2>/dev/null || true
+          cp public/robots.txt dist/ 2>/dev/null || true
+          cp public/404.html dist/ 2>/dev/null || true
+          echo "www.sw-point.com" > dist/CNAME
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
@@ -73,4 +57,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-github-deploy-instructions content loaded
