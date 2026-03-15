@@ -72,6 +72,8 @@ export function Hero() {
 
   return (
     <section
+      id="hero"
+      aria-label="Switch Point — Digital Product Studio Hero"
       className="relative overflow-hidden flex flex-col justify-center"
       style={{
         minHeight: "100vh",
@@ -194,6 +196,7 @@ export function Hero() {
             >
               <button
                 onClick={scrollToWork}
+                aria-label="View our case studies and portfolio projects"
                 className="flex items-center rounded-full transition-all duration-300"
                 style={{
                   padding: "14px 28px",
@@ -223,6 +226,7 @@ export function Hero() {
 
               <button
                 onClick={scrollToContact}
+                aria-label="Start a project with Switch Point"
                 className="flex items-center rounded-full transition-all duration-300"
                 style={{
                   padding: "14px 28px",
@@ -259,10 +263,13 @@ export function Hero() {
               transition={{ duration: 0.55, delay: 0.4, ease: [0.2, 0, 0, 1] }}
               className="flex flex-wrap"
               style={{ gap: "8px" }}
+              role="list"
+              aria-label="Core technologies"
             >
               {TAGS.map((tag) => (
                 <span
                   key={tag}
+                  role="listitem"
                   className="rounded-full"
                   style={{
                     padding: "4px 12px",
@@ -424,6 +431,7 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.1, duration: 0.5 }}
         onClick={scrollToWork}
+        aria-label="Scroll down to view our work"
         className="absolute bottom-10 left-1/2 flex flex-col items-center"
         style={{
           transform: "translateX(-50%)",

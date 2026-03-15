@@ -29,7 +29,9 @@ export function Navigation() {
 
   return (
     <>
+      <header>
       <nav
+        aria-label="Main navigation"
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
           backgroundColor: scrolled ? "rgba(13, 17, 23, 0.88)" : "transparent",
@@ -47,6 +49,7 @@ export function Navigation() {
           {/* ── Logo ── */}
           <a
             href="#"
+            aria-label="Switch Point — Back to top"
             className="flex items-center shrink-0"
             style={{ gap: "10px" }}
             onClick={(e) => {
@@ -158,7 +161,8 @@ export function Navigation() {
               cursor: "pointer",
             }}
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -243,6 +247,7 @@ export function Navigation() {
           )}
         </AnimatePresence>
       </nav>
+      </header>
     </>
   );
 }

@@ -538,7 +538,7 @@ export function Projects() {
   const expandedProject = PROJECTS.find((p) => p.id === expanded) ?? null;
 
   return (
-    <section id="work" style={{ backgroundColor: "var(--md-surface)", padding: "96px 0" }}>
+    <section id="work" aria-label="Featured case studies and portfolio projects" style={{ backgroundColor: "var(--md-surface)", padding: "96px 0" }}>
       <div className="max-w-7xl mx-auto" style={{ padding: "0 24px" }}>
         {/* ── Section Header ── */}
         <motion.div

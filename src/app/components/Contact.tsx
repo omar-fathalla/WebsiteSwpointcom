@@ -563,6 +563,8 @@ export function Contact() {
       {/* ── Footer ── */}
       <footer
         id="about"
+        role="contentinfo"
+        aria-label="Switch Point footer"
         style={{
           backgroundColor: "var(--md-surface-container-lowest)",
           borderTop: "1px solid var(--md-outline-variant)",
@@ -628,7 +630,7 @@ export function Contact() {
           </a>
 
           {/* Nav */}
-          <nav className="flex flex-wrap justify-center" style={{ gap: "4px" }}>
+          <nav aria-label="Footer navigation" className="flex flex-wrap justify-center" style={{ gap: "4px" }}>
             {["Work", "Services", "Process", "Contact"].map((link) => (
               <a
                 key={link}
@@ -671,7 +673,7 @@ export function Contact() {
               textAlign: "center" as const,
             }}
           >
-            © 2025 Switch Point. All rights reserved.{" "}
+            &copy; 2026 Switch Point. All rights reserved.{" "}
             <a
               href="mailto:support@sw-point.com"
               style={{ color: "var(--md-primary)", textDecoration: "none" }}

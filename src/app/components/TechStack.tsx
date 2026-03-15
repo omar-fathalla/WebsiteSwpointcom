@@ -102,6 +102,7 @@ export function TechStack() {
   return (
     <section
       id="services"
+      aria-label="Switch Point capabilities and tech stack"
       style={{
         backgroundColor: "var(--md-surface-container-lowest)",
         padding: "96px 0",
