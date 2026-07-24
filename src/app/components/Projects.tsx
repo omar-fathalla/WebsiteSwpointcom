@@ -36,6 +36,119 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    id: "luxline",
+    title: "LUX-Line Auto",
+    subtitle: "Luxury Car Rental & VIP Transportation Platform",
+    category: "Web Application",
+    tags: [
+      "React 18",
+      "TypeScript",
+      "Vite",
+      "Tailwind CSS 4",
+      "Motion (Framer)",
+      "Radix UI",
+      "Lucide React",
+      "Shadcn UI",
+      "Dark Mode",
+      "Interactive Fleet",
+      "Instant Reservation",
+    ],
+    image: "/luxline-preview.png",
+    problem:
+      "High-end luxury automobile rentals and VIP chauffeur services require a brand presence that exudes prestige, security, and effortless booking. Standard car rental templates fail to convey white-glove luxury, lack interactive vehicle specification showcases, and present friction-filled reservation flows that turn away VIP clients.",
+    solution:
+      "Designed and developed a bespoke, high-performance web platform for LUX-Line Auto using React 18, Vite, and Tailwind CSS. The platform features an interactive luxury fleet showcase (Lamborghini, Rolls-Royce, Ferrari, Porsche, Maybach) with real-time vehicle specification cards, dynamic filtering, interactive photo previews, and an instant reservation workflow with direct WhatsApp VIP concierge integration. Micro-interactions powered by Motion (Framer), custom canvas particles, and smooth dark-mode aesthetics deliver a luxury showroom digital experience.",
+    impact:
+      "Delivers a sub-second page load time via Vite bundling and asset optimization. Interactive fleet showcases increase visitor engagement, while the instant 2-step reservation modal paired with direct WhatsApp VIP Concierge routing converts high-intent luxury rental leads seamlessly across both desktop and mobile devices.",
+    accentColor: "#EAB308",
+    githubUrl: "https://github.com/omar-fathalla/Luxlineauto",
+    liveUrl: "https://luxe-lineauto.com/",
+    liveTabLabel: "Live Website",
+    liveLabel: "LUX-Line Auto — Live Platform",
+    liveDescription:
+      "Explore the live luxury rental showcase and VIP concierge booking experience at luxe-lineauto.com.",
+    liveDomain: "luxe-lineauto.com",
+    codeStats: [
+      { label: "Framework", value: "React 18" },
+      { label: "Styling", value: "Tailwind CSS 4" },
+      { label: "Animations", value: "Motion (Framer)" },
+      { label: "Platform", value: "Web (Desktop + Mobile)" },
+    ],
+    featuresDescription:
+      "LUX-Line Auto features 8 core modules designed to deliver a high-end luxury digital showroom experience from first click to vehicle reservation.",
+    highlights: [
+      "Interactive Premium Fleet Showcase with real-time performance specs (0-100 km/h, V8/V12 Engine, Horsepower)",
+      "Instant VIP Reservation modal with date picker, duration calculator, and white-glove delivery options",
+      "Direct WhatsApp VIP Concierge routing for instant custom quotes and private chauffeur booking",
+      "Custom floating particle animations & dark glassmorphism UI aesthetic tuned for luxury branding",
+      "Services section detailing VIP Chauffeur, Airport Transfers, Luxury Rentals & Wedding Fleets",
+      "Interactive Theme Provider supporting seamless Dark ↔ Light mode switching",
+      "Full responsive design optimized for mobile, tablet, and ultra-wide luxury displays",
+      "Core Web Vitals optimized with 100% client-side route transitions and zero layout shifts",
+    ],
+    dashboardFeatures: [
+      {
+        label: "Interactive Fleet Showcase",
+        detail:
+          "High-resolution vehicle cards displaying performance metrics, engine specifications, rental pricing, and instant booking CTA for supercar and luxury saloon fleets.",
+        icon: "package",
+      },
+      {
+        label: "Instant Reservation System",
+        detail:
+          "Streamlined booking modal allowing clients to select rental duration, pickup date, delivery location (Hotel, Airport, Residence), and optional chauffeur add-ons.",
+        icon: "calendar",
+      },
+      {
+        label: "VIP Concierge Integration",
+        detail:
+          "Direct integration with WhatsApp Business API allowing high-net-worth clients to initiate instant encrypted chats with concierge managers.",
+        icon: "bell",
+      },
+      {
+        label: "Luxury Service Spectrum",
+        detail:
+          "Detailed service modules for VIP Chauffeur, Executive Airport Transfers, Luxury Self-Drive, and Ceremonial / Wedding Fleet management.",
+        icon: "truck",
+      },
+      {
+        label: "Dynamic Theme Engine",
+        detail:
+          "Custom dark mode luxury palette with gold & neon cyan accent illumination, fully adaptable to light ambient environments.",
+        icon: "monitor",
+      },
+      {
+        label: "White-Glove Delivery Map",
+        detail:
+          "Interactive coverage overview showing hotel, airport, and private residence delivery zones across the UAE and regional luxury hubs.",
+        icon: "map",
+      },
+    ],
+    architecture: [
+      {
+        label: "Frontend Layer",
+        packages: "React 18 · TypeScript · Vite · Tailwind CSS 4 · Radix UI",
+        detail:
+          "Built on React 18 with Vite for instantaneous HMR and sub-second production builds. Radix UI primitives ensure full accessibility across modal dialogs and dropdown menus.",
+        color: "#EAB308",
+      },
+      {
+        label: "Animation & Effects Engine",
+        packages: "Motion (Framer Motion) · HTML5 Canvas Particles · Lucide Icons",
+        detail:
+          "Smooth scroll-driven animations and canvas particle systems create an immersive luxury ambiance without compromising 60 FPS rendering performance.",
+        color: "#38BDF8",
+      },
+      {
+        label: "Deployment & CDN",
+        packages: "Firebase Hosting / Custom Domain · Edge CDN",
+        detail:
+          "Deployed on high-speed CDN infrastructure with SSL encryption, custom domain mapping (luxe-lineauto.com), and global edge distribution.",
+        color: "#22C55E",
+      },
+    ],
+  },
+  {
     id: "tashil",
     title: "Tashil Delegate",
     subtitle: "Delegate Attendance & Field Ops",
