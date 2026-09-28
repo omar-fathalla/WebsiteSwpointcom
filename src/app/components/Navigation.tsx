@@ -2,15 +2,21 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 
-const NAV_LINKS = [
+interface NavigationProps {
+  onOpenLegal?: (tab: string) => void;
+}
+
+const NAV_LINKS: { label: string; href: string; legalTab?: string }[] = [
   { label: "Work", href: "#work" },
   { label: "Services", href: "#services" },
   { label: "Process", href: "#process" },
-  { label: "About", href: "#about" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "About Us", href: "#about-us", legalTab: "about" },
+  { label: "Policies", href: "#privacy-policy", legalTab: "privacy" },
   { label: "Contact", href: "#contact" },
 ];
 
-export function Navigation() {
+export function Navigation({ onOpenLegal }: NavigationProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeLink, setActiveLink] = useState<string | null>(null);
@@ -21,9 +27,13 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = (link: { label: string; href: string; legalTab?: string }) => {
     setMobileOpen(false);
-    const el = document.querySelector(href);
+    if (link.legalTab && onOpenLegal) {
+      onOpenLegal(link.legalTab);
+      return;
+    }
+    const el = document.querySelector(link.href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -95,7 +105,7 @@ export function Navigation() {
             {NAV_LINKS.map((link) => (
               <button
                 key={link.label}
-                onClick={() => handleNavClick(link.href)}
+                onClick={() => handleNavClick(link)}
                 onMouseEnter={() => setActiveLink(link.label)}
                 onMouseLeave={() => setActiveLink(null)}
                 className="relative rounded-full transition-colors duration-200"
@@ -124,7 +134,7 @@ export function Navigation() {
           {/* ── CTA ── */}
           <div className="hidden md:flex items-center" style={{ gap: "12px" }}>
             <button
-              onClick={() => handleNavClick("#contact")}
+              onClick={() => handleNavClick({ label: "Contact", href: "#contact" })}
               className="rounded-full transition-all duration-200"
               style={{
                 padding: "10px 20px",
@@ -188,6 +198,10 @@ export function Navigation() {
                     key={link.label}
                     onClick={() => {
                       setMobileOpen(false);
+                      if (link.legalTab && onOpenLegal) {
+                        onOpenLegal(link.legalTab);
+                        return;
+                      }
                       setTimeout(() => {
                         const el = document.querySelector(link.href);
                         if (el) el.scrollIntoView({ behavior: "smooth" });

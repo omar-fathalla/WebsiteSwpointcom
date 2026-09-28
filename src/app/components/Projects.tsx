@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowUpRight, X, CheckCircle, Zap, Target, Layers, Code2, ExternalLink, Globe, Monitor, Users, QrCode, BarChart2, MapPin, Bell, Calendar, Star, FileText, Truck, Package, Navigation, Route, Camera } from "lucide-react";
+import { ArrowUpRight, X, CheckCircle, Zap, Target, Layers, Code2, ExternalLink, Globe, Monitor, Users, QrCode, BarChart2, MapPin, Bell, Calendar, Star, FileText, Truck, Package, Navigation, Route, Camera, Sparkles } from "lucide-react";
+import { TashilShowcase } from "./tashil/TashilShowcase";
 const ukTransportImg = "https://images.unsplash.com/photo-1551471698-c7787ff6b7ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxVSyUyMHRyYW5zcG9ydCUyMG1vdmluZyUyMHRydWNrJTIwcmVtb3ZhbHN8ZW58MXx8fHwxNzczNTMzMzU5fDA&ixlib=rb-4.1.0&q=80&w=1080";
 
 interface ArchLayer {
@@ -648,62 +649,68 @@ const SECTION_LABEL_STYLE: React.CSSProperties = {
 export function Projects() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  // Filter out tashil from the secondary list because Tashil has its flagship showcase at the top
+  const otherProjects = PROJECTS.filter((p) => p.id !== "tashil");
   const expandedProject = PROJECTS.find((p) => p.id === expanded) ?? null;
 
   return (
     <section id="work" aria-label="Featured case studies and portfolio projects" style={{ backgroundColor: "var(--md-surface)", padding: "96px 0" }}>
       <div className="max-w-7xl mx-auto" style={{ padding: "0 24px" }}>
-        {/* ── Section Header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
-          className="flex flex-col"
-          style={{ gap: "16px", marginBottom: "64px", maxWidth: "640px" }}
-        >
-          <span style={SECTION_LABEL_STYLE}>Case Studies</span>
-          <h2
-            style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
-              fontWeight: 700,
-              color: "var(--md-on-surface)",
-              letterSpacing: "-0.025em",
-              lineHeight: 1.25,
-              margin: 0,
-            }}
-          >
-            Featured Projects
-          </h2>
-          <p
-            style={{
-              fontFamily: "'Roboto', sans-serif",
-              fontSize: "1rem",
-              fontWeight: 400,
-              lineHeight: 1.75,
-              color: "var(--md-on-surface-variant)",
-              margin: 0,
-            }}
-          >
-            Each project follows a Problem → Solution → Impact structure,
-            demonstrating both design precision and engineering rigour.
-          </p>
-        </motion.div>
+        {/* ── Flagship Enterprise Product Showcase: Tashil ── */}
+        <TashilShowcase />
 
-        {/* ── Cards Grid ── */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2"
-          style={{ gap: "24px" }}
-        >
-          {PROJECTS.map((project, i) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={i}
-              onExpand={() => setExpanded(project.id)}
-            />
-          ))}
+        {/* ── Other Selected Works Divider & Header ── */}
+        <div className="pt-20 mt-20 border-t border-slate-800/80">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
+            className="flex flex-col"
+            style={{ gap: "16px", marginBottom: "48px", maxWidth: "680px" }}
+          >
+            <span style={SECTION_LABEL_STYLE}>Selected Studio Works</span>
+            <h3
+              style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+                fontWeight: 700,
+                color: "var(--md-on-surface)",
+                letterSpacing: "-0.025em",
+                lineHeight: 1.25,
+                margin: 0,
+              }}
+            >
+              Other Selected Client Works
+            </h3>
+            <p
+              style={{
+                fontFamily: "'Roboto', sans-serif",
+                fontSize: "1rem",
+                fontWeight: 400,
+                lineHeight: 1.75,
+                color: "var(--md-on-surface-variant)",
+                margin: 0,
+              }}
+            >
+              Explore additional enterprise web applications, cross-platform mobile systems, and logistics solutions engineered by Switch Point studio.
+            </p>
+          </motion.div>
+
+          {/* ── Cards Grid ── */}
+          <div
+            className="grid grid-cols-1 md:grid-cols-2"
+            style={{ gap: "24px" }}
+          >
+            {otherProjects.map((project, i) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={i}
+                onExpand={() => setExpanded(project.id)}
+              />
+            ))}
+          </div>
         </div>
       </div>
 

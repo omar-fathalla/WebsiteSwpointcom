@@ -1,6 +1,24 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Send, Mail, Linkedin, Github, ArrowRight, Globe, Phone, Loader2, AlertCircle } from "lucide-react";
+import {
+  Send,
+  Mail,
+  Linkedin,
+  Github,
+  ArrowRight,
+  Globe,
+  Phone,
+  Loader2,
+  AlertCircle,
+  MapPin,
+  Clock,
+  ShieldCheck,
+  FileText,
+  RefreshCw,
+  Truck,
+  Info,
+  Building,
+} from "lucide-react";
 import { projectId, publicAnonKey } from "/utils/supabase/info";
 
 const SECTION_LABEL_STYLE: React.CSSProperties = {
@@ -12,7 +30,11 @@ const SECTION_LABEL_STYLE: React.CSSProperties = {
   color: "var(--md-primary)",
 };
 
-export function Contact() {
+interface ContactProps {
+  onOpenLegal?: (tab: string) => void;
+}
+
+export function Contact({ onOpenLegal }: ContactProps) {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -142,79 +164,203 @@ export function Contact() {
 
               {/* Contact methods */}
               <div className="flex flex-col" style={{ gap: "12px" }}>
-                {[
-                  {
-                    icon: <Mail size={16} />,
-                    label: "support@sw-point.com",
-                    href: "mailto:support@sw-point.com",
-                    color: "var(--md-primary)",
-                  },
-                  {
-                    icon: <Globe size={16} />,
-                    label: "www.sw-point.com",
-                    href: "https://www.sw-point.com",
-                    color: "var(--md-secondary)",
-                  },
-                  {
-                    icon: <Phone size={16} />,
-                    label: "WhatsApp (Egypt) — +20 121 185 7725",
-                    href: "https://wa.me/201211857725",
-                    color: "#25D366",
-                  },
-                  {
-                    icon: <Phone size={16} />,
-                    label: "WhatsApp (UAE) — +971 55 871 5615",
-                    href: "https://wa.me/971558715615",
-                    color: "#25D366",
-                  },
-                ].map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target={item.href.startsWith("mailto") || item.href.startsWith("tel:") ? undefined : "_blank"}
-                    rel="noopener noreferrer"
-                    className="flex items-center rounded-[12px] transition-all duration-200"
+                {/* Egypt Office */}
+                <div
+                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
+                  style={{
+                    background: "var(--md-surface-container-low)",
+                    border: "1px solid var(--md-outline-variant)",
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
                     style={{
-                      gap: "12px",
-                      padding: "14px 16px",
-                      background: "var(--md-surface-container-low)",
-                      border: "1px solid var(--md-outline-variant)",
-                      textDecoration: "none",
-                    }}
-                    onMouseEnter={(e) => {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.borderColor = item.color + "55";
-                      el.style.background = item.color + "0d";
-                    }}
-                    onMouseLeave={(e) => {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.borderColor = "var(--md-outline-variant)";
-                      el.style.background = "var(--md-surface-container-low)";
+                      width: "32px",
+                      height: "32px",
+                      background: "rgba(91, 168, 255, 0.12)",
+                      color: "var(--md-primary)",
                     }}
                   >
-                    <div
-                      className="flex items-center justify-center rounded-lg shrink-0"
+                    <MapPin size={16} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span
                       style={{
-                        width: "32px",
-                        height: "32px",
-                        background: item.color + "18",
-                        color: item.color,
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        color: "var(--md-primary)",
                       }}
                     >
-                      {item.icon}
-                    </div>
+                      Egypt Office (Regional Operations)
+                    </span>
                     <span
                       style={{
                         fontFamily: "'Roboto', sans-serif",
                         fontSize: "14px",
-                        fontWeight: 400,
+                        fontWeight: 500,
                         color: "var(--md-on-surface)",
+                        marginTop: "2px",
                       }}
                     >
-                      {item.label}
+                      Alexandria, Egypt
                     </span>
-                  </a>
-                ))}
+                    <a
+                      href="tel:+201211857725"
+                      className="text-xs mt-1 hover:underline"
+                      style={{ color: "var(--md-on-surface-variant)" }}
+                    >
+                      Tel / WhatsApp: +20 121 185 7725
+                    </a>
+                  </div>
+                </div>
+
+                {/* UAE Office */}
+                <div
+                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
+                  style={{
+                    background: "var(--md-surface-container-low)",
+                    border: "1px solid var(--md-outline-variant)",
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      background: "rgba(46, 213, 115, 0.12)",
+                      color: "#25D366",
+                    }}
+                  >
+                    <Building size={16} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span
+                      style={{
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        color: "#25D366",
+                      }}
+                    >
+                      UAE Office (Commercial & Corporate)
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Roboto', sans-serif",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: "var(--md-on-surface)",
+                        marginTop: "2px",
+                      }}
+                    >
+                      Dubai, United Arab Emirates
+                    </span>
+                    <a
+                      href="https://wa.me/971558715615"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs mt-1 hover:underline"
+                      style={{ color: "var(--md-on-surface-variant)" }}
+                    >
+                      WhatsApp: +971 55 871 5615
+                    </a>
+                  </div>
+                </div>
+
+                {/* Support Email */}
+                <div
+                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
+                  style={{
+                    background: "var(--md-surface-container-low)",
+                    border: "1px solid var(--md-outline-variant)",
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      background: "rgba(167, 139, 250, 0.12)",
+                      color: "#a78bfa",
+                    }}
+                  >
+                    <Mail size={16} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span
+                      style={{
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        color: "#a78bfa",
+                      }}
+                    >
+                      Official Support & Billing Desk
+                    </span>
+                    <a
+                      href="mailto:support@sw-point.com"
+                      className="text-sm font-medium hover:underline mt-0.5"
+                      style={{ color: "var(--md-on-surface)" }}
+                    >
+                      support@sw-point.com
+                    </a>
+                    <span className="text-xs mt-1" style={{ color: "var(--md-on-surface-variant)" }}>
+                      Response SLA: Under 24 Business Hours
+                    </span>
+                  </div>
+                </div>
+
+                {/* Hours & Availability */}
+                <div
+                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
+                  style={{
+                    background: "var(--md-surface-container-low)",
+                    border: "1px solid var(--md-outline-variant)",
+                  }}
+                >
+                  <div
+                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      background: "rgba(251, 191, 36, 0.12)",
+                      color: "#fbbf24",
+                    }}
+                  >
+                    <Clock size={16} />
+                  </div>
+                  <div className="flex flex-col">
+                    <span
+                      style={{
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        color: "#fbbf24",
+                      }}
+                    >
+                      Working Hours
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Roboto', sans-serif",
+                        fontSize: "13px",
+                        color: "var(--md-on-surface)",
+                        marginTop: "2px",
+                      }}
+                    >
+                      Sunday – Thursday: 9:00 AM – 6:00 PM (GMT+2 / GMT+4)
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* Social links */}
@@ -564,123 +710,198 @@ export function Contact() {
       <footer
         id="about"
         role="contentinfo"
-        aria-label="Switch Point footer"
+        aria-label="Switch Point footer and legal center"
         style={{
           backgroundColor: "var(--md-surface-container-lowest)",
           borderTop: "1px solid var(--md-outline-variant)",
-          padding: "48px 0",
+          padding: "56px 0 36px 0",
         }}
       >
-        <div
-          className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between"
-          style={{ padding: "0 24px", gap: "24px" }}
-        >
-          {/* Logo */}
-          <a
-            href="https://www.sw-point.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center"
-            style={{ gap: "10px", textDecoration: "none" }}
-          >
-            <div
-              className="flex items-center justify-center rounded-[10px]"
-              style={{
-                width: "32px",
-                height: "32px",
-                background:
-                  "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary) 100%)",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "11px",
-                  fontWeight: 800,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
-                }}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-10 border-b border-[var(--md-outline-variant)]">
+            {/* Col 1: Brand & Registration */}
+            <div className="md:col-span-4 flex flex-col gap-4">
+              <a
+                href="https://sw-point.com"
+                className="flex items-center gap-2.5 text-decoration-none"
               >
-                SP
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span
-                style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  color: "var(--md-on-surface)",
-                  letterSpacing: "-0.025em",
-                }}
-              >
-                Switch Point
-              </span>
-              <span
+                <div
+                  className="flex items-center justify-center rounded-[10px]"
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    background: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary) 100%)",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontSize: "11px",
+                      fontWeight: 800,
+                      color: "#fff",
+                      letterSpacing: "-0.03em",
+                    }}
+                  >
+                    SP
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span
+                    style={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontSize: "16px",
+                      fontWeight: 700,
+                      color: "var(--md-on-surface)",
+                      letterSpacing: "-0.025em",
+                    }}
+                  >
+                    Switch Point
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Roboto', sans-serif",
+                      fontSize: "11px",
+                      color: "var(--md-on-surface-variant)",
+                    }}
+                  >
+                    Digital Product Studio & Enterprise SaaS
+                  </span>
+                </div>
+              </a>
+              <p
                 style={{
                   fontFamily: "'Roboto', sans-serif",
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  color: "var(--md-on-surface-variant)",
-                }}
-              >
-                sw-point.com
-              </span>
-            </div>
-          </a>
-
-          {/* Nav */}
-          <nav aria-label="Footer navigation" className="flex flex-wrap justify-center" style={{ gap: "4px" }}>
-            {["Work", "Services", "Process", "Contact"].map((link) => (
-              <a
-                key={link}
-                href={`#${link.toLowerCase()}`}
-                className="rounded-full transition-colors duration-200"
-                style={{
-                  padding: "6px 14px",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontSize: "13px",
-                  fontWeight: 500,
+                  lineHeight: 1.7,
                   color: "var(--md-on-surface-variant)",
-                  textDecoration: "none",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    "var(--md-primary)";
-                  (e.currentTarget as HTMLElement).style.background =
-                    "rgba(91,168,255,0.08)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    "var(--md-on-surface-variant)";
-                  (e.currentTarget as HTMLElement).style.background =
-                    "transparent";
+                  margin: 0,
                 }}
               >
-                {link}
-              </a>
-            ))}
-          </nav>
+                Engineering high-concurrency cross-platform applications, biometric field attendance systems (Tashil), and modern digital experiences across Egypt and the UAE.
+              </p>
+              <div className="text-xs text-[var(--md-on-surface-variant)] flex flex-col gap-1">
+                <span>📍 <strong>Egypt Office:</strong> Alexandria, Egypt</span>
+                <span>🏢 <strong>UAE Office:</strong> Dubai, United Arab Emirates</span>
+                <span>✉️ <strong>Support:</strong> support@sw-point.com</span>
+              </div>
+            </div>
 
-          {/* Copyright */}
-          <p
-            style={{
-              fontFamily: "'Roboto', sans-serif",
-              fontSize: "12px",
-              fontWeight: 400,
-              color: "var(--md-on-surface-variant)",
-              margin: 0,
-              textAlign: "center" as const,
-            }}
-          >
-            &copy; 2026 Switch Point. All rights reserved.{" "}
-            <a
-              href="mailto:support@sw-point.com"
-              style={{ color: "var(--md-primary)", textDecoration: "none" }}
-            >
-              support@sw-point.com
-            </a>
-          </p>
+            {/* Col 2: Navigation Links */}
+            <div className="md:col-span-3 flex flex-col gap-3">
+              <span
+                style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: "var(--md-on-surface)",
+                }}
+              >
+                Platform & Solutions
+              </span>
+              <nav aria-label="Footer platform links" className="flex flex-col gap-2">
+                {[
+                  { label: "Work & Portfolio", href: "#work" },
+                  { label: "Studio Services", href: "#services" },
+                  { label: "Engineering Process", href: "#process" },
+                  { label: "Commercial Pricing", href: "#pricing" },
+                  { label: "Contact Us", href: "#contact" },
+                ].map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="text-xs text-[var(--md-on-surface-variant)] hover:text-[var(--md-primary)] transition-colors duration-150"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+
+            {/* Col 3: Legal & Regulatory Policies */}
+            <div className="md:col-span-5 flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={16} className="text-[var(--md-primary)]" />
+                <span
+                  style={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    color: "var(--md-on-surface)",
+                  }}
+                >
+                  Legal & Compliance Policies
+                </span>
+              </div>
+              <p className="text-xs text-[var(--md-on-surface-variant)] mb-1">
+                Fully transparent commercial and operational terms for merchant account and payment approval:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal ? onOpenLegal("privacy") : (window.location.hash = "privacy-policy")}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
+                >
+                  <ShieldCheck size={14} className="text-cyan-400 shrink-0" />
+                  <span>Privacy Policy (Tashil)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal ? onOpenLegal("delivery") : (window.location.hash = "delivery-policy")}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
+                >
+                  <Truck size={14} className="text-blue-400 shrink-0" />
+                  <span>Delivery & Fulfillment</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal ? onOpenLegal("refund") : (window.location.hash = "refund-policy")}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
+                >
+                  <RefreshCw size={14} className="text-emerald-400 shrink-0" />
+                  <span>Refund & Cancellation</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal ? onOpenLegal("terms") : (window.location.hash = "terms-of-service")}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
+                >
+                  <FileText size={14} className="text-amber-400 shrink-0" />
+                  <span>Terms of Service</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenLegal ? onOpenLegal("about") : (window.location.hash = "about-us")}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150 sm:col-span-2"
+                >
+                  <Info size={14} className="text-purple-400 shrink-0" />
+                  <span>About Us (Switch Point Studio)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Copyright & Security */}
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--md-on-surface-variant)]">
+            <p className="margin-0 text-center sm:text-left">
+              &copy; 2026 Switch Point. All rights reserved. Commercial registration in Alexandria, Egypt & Dubai, UAE.
+            </p>
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1.5 text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                256-Bit SSL Encrypted
+              </span>
+              <a
+                href="mailto:support@sw-point.com"
+                className="text-[var(--md-primary)] hover:underline"
+              >
+                support@sw-point.com
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </>

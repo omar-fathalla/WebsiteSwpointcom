@@ -2,8 +2,10 @@ import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
 import { Projects } from "./components/Projects";
 import { TechStack } from "./components/TechStack";
+import { Pricing } from "./components/Pricing";
 import { Contact } from "./components/Contact";
-import { useEffect, useCallback } from "react";
+import { LegalModal } from "./components/legal/LegalModal";
+import { useEffect, useState, useCallback } from "react";
  
 // ─── SEO Constants ───────────────────────────────────────────────────────────
 const SITE_CONFIG = {
@@ -119,6 +121,20 @@ const organizationSchema = {
       availableLanguage: ["English", "Arabic"],
     },
   ],
+  address: [
+    {
+      "@type": "PostalAddress",
+      addressLocality: "Alexandria",
+      addressCountry: "EG",
+      description: "Regional Operations Headquarters",
+    },
+    {
+      "@type": "PostalAddress",
+      addressLocality: "Dubai",
+      addressCountry: "AE",
+      description: "Commercial & Corporate Office",
+    },
+  ],
   sameAs: [SITE_CONFIG.social.linkedin, SITE_CONFIG.social.github],
   knowsAbout: [
     "UI/UX Design",
@@ -218,13 +234,13 @@ const portfolioSchema = {
       position: 1,
       item: {
         "@type": "CreativeWork",
-        name: "Tashil Delegate — Attendance & Field Ops App",
+        name: "Tashil Enterprise Platform — Flagship Field Operations Ecosystem",
         description:
-          "Flutter mobile app for delegate attendance tracking with QR code check-in, GPS location verification, biometric options, real-time Firebase sync, and Angular web dashboard. Uses BLoC state management and Clean Architecture.",
-        url: `${SITE_CONFIG.url}/#tashil`,
+          "Enterprise B2B field operations ecosystem featuring a Flutter mobile app and Angular web command center. Covers 9 specialized organizational roles, anti-fraud geofencing, GPS live radar, watermarked photo permits, automated violation audit, offline-first 0ms architecture, and real-time Firebase sync.",
+        url: `${SITE_CONFIG.url}/#work`,
         creator: { "@type": "Organization", name: SITE_CONFIG.name },
         keywords:
-          "Flutter, BLoC, Clean Architecture, Firebase, QR Code, GPS, Attendance Tracking, Angular Dashboard",
+          "Tashil, Flagship Product, Flutter, Angular Web, Clean Architecture, BLoC, Firebase, Anti-Fraud Geofencing, GPS Radar, QR Code, Offline-First, Multi-Tenant Enterprise",
       },
     },
     {
@@ -387,11 +403,45 @@ export default function App() {
     setJsonLd("ld-faq", faqSchema);
     setJsonLd("ld-breadcrumb", breadcrumbSchema);
   }, []);
- 
+  const [legalModalOpen, setLegalModalOpen] = useState(false);
+  const [activeLegalTab, setActiveLegalTab] = useState("privacy");
+
+  const handleOpenLegal = useCallback((tab: string) => {
+    setActiveLegalTab(tab);
+    setLegalModalOpen(true);
+  }, []);
+
+  // Handle URL hash changes for deep linking policies (e.g. sw-point.com/#privacy-policy)
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.toLowerCase().replace("#", "");
+      if (hash === "privacy-policy" || hash === "privacy") {
+        setActiveLegalTab("privacy");
+        setLegalModalOpen(true);
+      } else if (hash === "refund-policy" || hash === "refund") {
+        setActiveLegalTab("refund");
+        setLegalModalOpen(true);
+      } else if (hash === "delivery-policy" || hash === "delivery") {
+        setActiveLegalTab("delivery");
+        setLegalModalOpen(true);
+      } else if (hash === "terms-of-service" || hash === "terms") {
+        setActiveLegalTab("terms");
+        setLegalModalOpen(true);
+      } else if (hash === "about-us" || hash === "about-company") {
+        setActiveLegalTab("about");
+        setLegalModalOpen(true);
+      }
+    };
+
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
   useEffect(() => {
     setupSEO();
   }, [setupSEO]);
- 
+
   return (
     <div
       className="min-h-screen"
@@ -405,15 +455,22 @@ export default function App() {
       >
         Skip to main content
       </a>
- 
-      <Navigation />
- 
+
+      <Navigation onOpenLegal={handleOpenLegal} />
+
       <main role="main" itemScope itemType="https://schema.org/WebPage">
         <Hero />
         <Projects />
         <TechStack />
-        <Contact />
+        <Pricing onOpenLegal={handleOpenLegal} />
+        <Contact onOpenLegal={handleOpenLegal} />
       </main>
+
+      <LegalModal
+        isOpen={legalModalOpen}
+        initialTab={activeLegalTab}
+        onClose={() => setLegalModalOpen(false)}
+      />
     </div>
   );
 }
