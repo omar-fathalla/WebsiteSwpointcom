@@ -169,7 +169,7 @@ export function LegalModal({ isOpen, initialTab = "privacy", onClose }: LegalMod
                   <MapPin className="w-3.5 h-3.5 text-sky-400" />
                   Egypt Office (Physical Address)
                 </span>
-                <p className="text-slate-300">Alexandria, Egypt</p>
+                <p className="text-slate-300">Commercial Market, Smouha, Alexandria, Egypt</p>
                 <p className="text-slate-400 font-mono">Tel: +20 121 185 7725</p>
               </div>
 

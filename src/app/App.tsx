@@ -124,6 +124,7 @@ const organizationSchema = {
   address: [
     {
       "@type": "PostalAddress",
+      streetAddress: "Commercial Market, Smouha",
       addressLocality: "Alexandria",
       addressCountry: "EG",
       description: "Regional Operations Headquarters",
@@ -430,6 +431,9 @@ export default function App() {
       } else if (hash === "about-us" || hash === "about-company") {
         setActiveLegalTab("about");
         setLegalModalOpen(true);
+      } else if (hash === "tashil" || hash === "tashil-platform") {
+        const el = document.getElementById("tashil");
+        if (el) el.scrollIntoView({ behavior: "smooth" });
       }
     };
 

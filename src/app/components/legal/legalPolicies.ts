@@ -65,7 +65,7 @@ export const LEGAL_POLICIES: Record<string, LegalPolicy> = {
         content: [
           "Website: https://sw-point.com",
           "Official Email: support@sw-point.com",
-          "Egypt Office: Alexandria, Egypt · Phone: +20 121 185 7725",
+          "Egypt Office: Commercial Market, Smouha, Alexandria, Egypt · Phone: +20 121 185 7725",
           "UAE Office: Dubai, United Arab Emirates · WhatsApp: +971 55 871 5615",
         ],
       },
@@ -219,7 +219,7 @@ export const LEGAL_POLICIES: Record<string, LegalPolicy> = {
       {
         heading: "3. Registered Corporate Locations",
         content: [
-          "Egypt Office: Alexandria, Egypt · Phone: +20 121 185 7725",
+          "Egypt Office: Commercial Market, Smouha, Alexandria, Egypt · Phone: +20 121 185 7725",
           "UAE Office: Dubai, United Arab Emirates · WhatsApp: +971 55 871 5615",
           "Email: support@sw-point.com · Website: https://sw-point.com",
         ],

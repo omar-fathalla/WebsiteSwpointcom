@@ -1,32 +1,36 @@
 import { useState } from "react";
-import { motion } from "motion/react";
-import { Check, ShieldCheck, Zap, Sparkles, Building2, Smartphone, ArrowRight, HelpCircle, RefreshCw, Clock } from "lucide-react";
+import { Check, ShieldCheck, Zap, Sparkles, Building2, Smartphone, ArrowRight, RefreshCw, Clock } from "lucide-react";
 
 interface PricingProps {
-  onOpenLegal?: (tab: string) => void;
+  readonly onOpenLegal?: (tab: string) => void;
 }
 
-export function Pricing({ onOpenLegal }: PricingProps) {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+export function Pricing({ onOpenLegal }: Readonly<PricingProps>) {
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("annual");
   const [activeTab, setActiveTab] = useState<"saas" | "services">("saas");
 
   const saasPlans = [
     {
-      id: "starter",
-      name: "Tashil Starter",
-      subtitle: "For small teams and localized field delegate fleets",
-      monthlyPrice: 1.8,
-      annualPrice: 1.5,
+      id: "lite",
+      name: "Tashil Lite",
+      badge: "Fleet Attendance",
+      subtitle: "For small teams and growing field fleets requiring strict attendance security",
+      monthlyPrice: 50,
+      annualPrice: 42,
+      currency: "EGP",
       unit: "per delegate / month",
+      annualNote: "Billed annually (500 EGP / delegate / yr — 2 months free)",
       popular: false,
-      description: "Essential biometric attendance, dynamic QR scanning, and automated zone geofencing.",
+      description: "Essential biometric attendance, anti-spoofing Geofencing, hardware device binding, and offline-first queue.",
       features: [
-        "Up to 15 field delegates",
-        "Circular GPS geofence zone verification",
         "Dynamic anti-spoofing QR check-in & check-out",
-        "Daily attendance logs & PDF report export",
+        "Circular & polygon GPS geofence zone verification",
+        "Anti-Fake GPS & mock location blocker",
+        "Hardware device binding (1 delegate = 1 phone)",
+        "Offline-first 0ms sync engine (works in basements)",
+        "Daily attendance logs & Excel/PDF export",
         "Native Android & iOS delegate application",
-        "Standard email & ticket support (24h response)",
+        "Standard email & WhatsApp support",
       ],
       ctaText: "Start 14-Day Free Pilot",
       ctaLink: "#contact",
@@ -34,45 +38,55 @@ export function Pricing({ onOpenLegal }: PricingProps) {
     },
     {
       id: "pro",
-      name: "Tashil Growth",
-      subtitle: "For growing distribution companies and multi-branch teams",
-      monthlyPrice: 5,
-      annualPrice: 4,
-      unit: "per delegate / month",
+      name: "Tashil Pro HR",
+      badge: "Most Popular",
+      subtitle: "Full operational & HR suite with unlimited delegates for enterprise companies",
+      monthlyPrice: 1800,
+      annualPrice: 1500,
+      currency: "EGP",
+      unit: "per company / month (Unlimited)",
+      annualNote: "Billed annually (18,000 EGP / company / yr — Unlimited Delegates)",
       popular: true,
-      description: "Full real-time tracking, offline synchronization engine, and automated payroll calculations.",
+      description: "Complete field workforce automation: live fleet tracking, shifts, leave approvals, device unbinding, and payroll.",
       features: [
-        "Up to 100 field delegates",
-        "Multi-polygon geofences & branch hierarchies",
-        "Offline-first sync engine with local SQLite cache",
-        "Camera audit photo capture (gallery bypass protection)",
-        "Real-time supervisor web dashboard",
-        "Automated payroll, overtime & delay deductions",
-        "Priority WhatsApp & phone support (under 2 hours)",
+        "Unlimited field delegates & branch zones",
+        "All features in Tashil Lite included",
+        "Real-time live fleet tracking & breadcrumb route history",
+        "Dynamic shift rostering & supervisor adjustments",
+        "Digital leave, excuse & permission approval workflows",
+        "Device hardware unbind requests with HR approval",
+        "Automated monthly payroll, late penalties & overtime engine",
+        "Real-time supervisor web command center & admin portal",
+        "Priority phone & WhatsApp support (under 1h response)",
       ],
-      ctaText: "Deploy Tashil Growth",
+      ctaText: "Deploy Tashil Pro HR",
       ctaLink: "#contact",
       highlight: true,
     },
     {
-      id: "enterprise",
-      name: "Tashil Enterprise",
-      subtitle: "For nationwide distribution, logistics corporations & government delegates",
-      monthlyPrice: 9.5,
-      annualPrice: 7.9,
-      unit: "per delegate / month",
+      id: "retail",
+      name: "Tashil Retail & FMCG",
+      badge: "Merchandising & Photos",
+      subtitle: "For FMCG distributors, brands & merchandising teams auditing retail shelves",
+      monthlyPrice: 2400,
+      annualPrice: 2000,
+      currency: "EGP",
+      unit: "per company / month (10K Photos)",
+      annualNote: "Billed annually (24,000 EGP / company / yr — includes 10,000 photos/mo)",
       popular: false,
-      description: "Dedicated cloud tenant, custom HRMS / ERP API connectors, and bespoke compliance SLAs.",
+      description: "Full HR suite plus in-store hypermarket shelf compliance, live camera-only photo permits, and 10,000 photos/month.",
       features: [
-        "Unlimited field delegates & branch zones",
-        "Dedicated isolated Google Cloud Firestore database",
-        "Custom ERP / SAP / Oracle HR payroll integrations",
-        "3-Factor biometric security & hardware binding",
-        "Custom feature engineering & on-premise relay options",
-        "99.95% enterprise uptime SLA guarantee",
-        "Dedicated Technical Account Manager & direct phone hotline",
+        "Unlimited field delegates & retail hypermarkets",
+        "All features in Tashil Pro HR included",
+        "In-store shelf, display & planogram audit module",
+        "Camera-only live enforcement (zero gallery upload fraud)",
+        "Automatic GPS coordinates & time watermark on every photo",
+        "Up to 10,000 in-store photos uploaded per month included",
+        "Dedicated high-speed cloud photo storage",
+        "Visual competitor & promotional display share analytics",
+        "Dedicated technical account manager & priority hotline",
       ],
-      ctaText: "Contact Enterprise Sales",
+      ctaText: "Get Tashil Retail Audit",
       ctaLink: "#contact",
       highlight: false,
     },
@@ -195,26 +209,35 @@ export function Pricing({ onOpenLegal }: PricingProps) {
 
           {/* Monthly / Annual Toggle for SaaS */}
           {activeTab === "saas" && (
-            <div className="mt-6 flex items-center justify-center gap-3">
-              <span className={`text-sm ${billingCycle === "monthly" ? "text-[var(--md-on-surface)] font-medium" : "text-[var(--md-on-surface-variant)]"}`}>
-                Monthly Billing
-              </span>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={billingCycle === "annual"}
-                onClick={() => setBillingCycle(billingCycle === "monthly" ? "annual" : "monthly")}
-                className="w-13 h-7 flex items-center rounded-full p-1 transition-colors duration-200 bg-[var(--md-surface-container-highest)] border border-[var(--md-outline-variant)]"
+            <div className="mt-6 flex flex-col items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-3">
+                <span className={`text-sm ${billingCycle === "monthly" ? "text-[var(--md-on-surface)] font-medium" : "text-[var(--md-on-surface-variant)]"}`}>
+                  Monthly Billing
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={billingCycle === "annual"}
+                  onClick={() => setBillingCycle(billingCycle === "monthly" ? "annual" : "monthly")}
+                  className="w-13 h-7 flex items-center rounded-full p-1 transition-colors duration-200 bg-[var(--md-surface-container-highest)] border border-[var(--md-outline-variant)]"
+                >
+                  <div
+                    className={`bg-[var(--md-primary)] w-5 h-5 rounded-full shadow-md transform transition-transform duration-200 ${
+                      billingCycle === "annual" ? "translate-x-6" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm flex items-center gap-1.5 ${billingCycle === "annual" ? "text-[var(--md-on-surface)] font-medium" : "text-[var(--md-on-surface-variant)]"}`}>
+                  Annual Billing <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20">Save up to 17% (2 Months Free)</span>
+                </span>
+              </div>
+              <a
+                href="#tashil"
+                className="mt-1 text-xs font-semibold text-[var(--md-primary)] hover:underline inline-flex items-center gap-1.5 transition-colors"
               >
-                <div
-                  className={`bg-[var(--md-primary)] w-5 h-5 rounded-full shadow-md transform transition-transform duration-200 ${
-                    billingCycle === "annual" ? "translate-x-6" : "translate-x-0"
-                  }`}
-                />
-              </button>
-              <span className={`text-sm flex items-center gap-1.5 ${billingCycle === "annual" ? "text-[var(--md-on-surface)] font-medium" : "text-[var(--md-on-surface-variant)]"}`}>
-                Annual Billing <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20">Save 20%</span>
-              </span>
+                <span>Looking for deep-dive technical specs & live system simulators?</span>
+                <span className="underline">Explore Tashil Platform Showcase →</span>
+              </a>
             </div>
           )}
         </div>
@@ -241,19 +264,34 @@ export function Pricing({ onOpenLegal }: PricingProps) {
                   )}
 
                   <div>
-                    <h3 className="text-xl font-bold text-[var(--md-on-surface)]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-                      {plan.name}
-                    </h3>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <h3 className="text-xl font-bold text-[var(--md-on-surface)]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                        {plan.name}
+                      </h3>
+                      {plan.badge && (
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[var(--md-primary)]/10 text-[var(--md-primary)] border border-[var(--md-primary)]/20">
+                          {plan.badge}
+                        </span>
+                      )}
+                    </div>
                     <p className="mt-1 text-xs text-[var(--md-on-surface-variant)] min-h-[32px]">{plan.subtitle}</p>
 
                     <div className="mt-6 mb-6">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-extrabold text-[var(--md-on-surface)]">${price}</span>
-                        <span className="text-sm text-[var(--md-on-surface-variant)]">USD</span>
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-4xl font-extrabold text-[var(--md-on-surface)]">
+                          {price.toLocaleString()}
+                        </span>
+                        <span className="text-sm font-bold text-[var(--md-primary)]">
+                          {plan.currency}
+                        </span>
                       </div>
-                      <span className="text-xs text-[var(--md-on-surface-variant)] block mt-0.5">{plan.unit}</span>
-                      {billingCycle === "annual" && (
-                        <span className="text-xs text-emerald-400 mt-1 block">Billed annually (${(price * 12).toFixed(1).replace(/\.0$/, "")}/delegate/yr)</span>
+                      <span className="text-xs text-[var(--md-on-surface-variant)] block mt-0.5">
+                        {plan.unit}
+                      </span>
+                      {billingCycle === "annual" && plan.annualNote && (
+                        <span className="text-xs text-emerald-400 mt-1.5 block font-medium">
+                          {plan.annualNote}
+                        </span>
                       )}
                     </div>
 
@@ -265,8 +303,8 @@ export function Pricing({ onOpenLegal }: PricingProps) {
                       <span className="text-xs font-semibold uppercase tracking-wider text-[var(--md-on-surface)] block">
                         Included Features:
                       </span>
-                      {plan.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-start gap-2.5 text-sm text-[var(--md-on-surface-variant)]">
+                      {plan.features.map((feat) => (
+                        <div key={feat} className="flex items-start gap-2.5 text-sm text-[var(--md-on-surface-variant)]">
                           <Check size={16} className="text-emerald-400 shrink-0 mt-0.5" />
                           <span>{feat}</span>
                         </div>
@@ -304,7 +342,7 @@ export function Pricing({ onOpenLegal }: PricingProps) {
               >
                 {pkg.popular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[var(--md-primary)] text-[var(--md-on-primary)] shadow-md">
-                    Recommended Choice
+                    Most Popular Engagement
                   </div>
                 )}
 
@@ -328,8 +366,8 @@ export function Pricing({ onOpenLegal }: PricingProps) {
                     <span className="text-xs font-semibold uppercase tracking-wider text-[var(--md-on-surface)] block">
                       Deliverables Included:
                     </span>
-                    {pkg.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-start gap-2.5 text-sm text-[var(--md-on-surface-variant)]">
+                    {pkg.features.map((feat) => (
+                      <div key={feat} className="flex items-start gap-2.5 text-sm text-[var(--md-on-surface-variant)]">
                         <Check size={16} className="text-emerald-400 shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </div>
@@ -402,9 +440,9 @@ export function Pricing({ onOpenLegal }: PricingProps) {
                 <RefreshCw size={22} />
               </div>
               <div>
-                <h4 className="text-sm font-semibold text-[var(--md-on-surface)]">Multi-Currency & VAT Invoicing</h4>
+                <h4 className="text-sm font-semibold text-[var(--md-on-surface)]">Multi-Currency & Official Invoicing</h4>
                 <p className="mt-1 text-xs text-[var(--md-on-surface-variant)] leading-relaxed">
-                  Prices billed in USD or converted to local EGP and AED currencies. Official tax invoices provided for Egypt & UAE corporate accounts.
+                  Tashil plans billed in Egyptian Pounds (EGP), with USD & AED available for international enterprise accounts. Official VAT invoices provided.
                 </p>
                 {onOpenLegal && (
                   <button

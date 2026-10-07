@@ -13,7 +13,7 @@ export function TashilShowcase() {
   const [activeTab, setActiveTab] = useState<string>("roles");
 
   return (
-    <div className="w-full space-y-12">
+    <div id="tashil" className="w-full space-y-12">
       {/* ── Stage 1: Hero & Interactive Stage Tabs ── */}
       <TashilHero activeTab={activeTab} setActiveTab={setActiveTab} />
 

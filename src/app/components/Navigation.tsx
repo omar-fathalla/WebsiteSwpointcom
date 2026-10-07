@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 
 interface NavigationProps {
-  onOpenLegal?: (tab: string) => void;
+  readonly onOpenLegal?: (tab: string) => void;
 }
 
 const NAV_LINKS: { label: string; href: string; legalTab?: string }[] = [
+  { label: "Tashil Platform", href: "#tashil" },
   { label: "Work", href: "#work" },
   { label: "Services", href: "#services" },
   { label: "Process", href: "#process" },
@@ -16,7 +17,7 @@ const NAV_LINKS: { label: string; href: string; legalTab?: string }[] = [
   { label: "Contact", href: "#contact" },
 ];
 
-export function Navigation({ onOpenLegal }: NavigationProps) {
+export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeLink, setActiveLink] = useState<string | null>(null);
@@ -38,8 +39,7 @@ export function Navigation({ onOpenLegal }: NavigationProps) {
   };
 
   return (
-    <>
-      <header>
+    <header>
       <nav
         aria-label="Main navigation"
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
@@ -261,7 +261,6 @@ export function Navigation({ onOpenLegal }: NavigationProps) {
           )}
         </AnimatePresence>
       </nav>
-      </header>
-    </>
+    </header>
   );
 }
