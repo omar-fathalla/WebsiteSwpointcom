@@ -414,7 +414,7 @@ export default function App() {
 
   // Per-route title + scroll to /#section after cross-page navigation
   useEffect(() => {
-    if (location.pathname === "/works") {
+    if (location.pathname.replace(/\/$/, "") === "/works") {
       document.title = "Studio Works & Services — Switch Point";
       setMeta("description", "Switch Point studio works and services: mobile, web, backend and UI/UX capabilities, our engineering process, and client platforms: LUX-Line, Emirates Delivery Hub, UK Transport & Removals, Chapeau ERP — Flutter, Angular, React and Firebase case studies.");
       setLink("canonical", `${SITE_CONFIG.url}/works`);

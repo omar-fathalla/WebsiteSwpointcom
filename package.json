@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "postbuild": "mkdir -p dist/works && cp dist/index.html dist/works/index.html"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
