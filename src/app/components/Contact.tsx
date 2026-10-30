@@ -943,7 +943,7 @@ export function Contact({ onOpenLegal }: Readonly<ContactProps>) {
                   { label: "Work & Portfolio", href: "#work" },
                   { label: "Studio Services", href: "#services" },
                   { label: "Engineering Process", href: "#process" },
-                  { label: "Commercial Pricing", href: "#pricing" },
+                  { label: "Subscriptions", href: "#subscriptions" },
                   { label: "Contact Us", href: "#contact" },
                 ].map((item) => (
                   <a

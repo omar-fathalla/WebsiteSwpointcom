@@ -2,7 +2,12 @@ import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
 import { Projects } from "./components/Projects";
 import { TechStack } from "./components/TechStack";
-import { Pricing } from "./components/Pricing";
+import { CompanyProducts } from "./components/CompanyProducts";
+import { SubscriptionServices } from "./components/SubscriptionServices";
+import { CartProvider } from "./context/CartContext";
+import { CartDrawer } from "./components/cart/CartDrawer";
+import { CheckoutModal } from "./components/cart/CheckoutModal";
+import { PaymentResult } from "./components/cart/PaymentResult";
 import { Contact } from "./components/Contact";
 import { LegalModal } from "./components/legal/LegalModal";
 import { useEffect, useState, useCallback } from "react";
@@ -447,6 +452,7 @@ export default function App() {
   }, [setupSEO]);
 
   return (
+    <CartProvider>
     <div
       className="min-h-screen"
       style={{ backgroundColor: "var(--md-surface)" }}
@@ -462,11 +468,12 @@ export default function App() {
 
       <Navigation onOpenLegal={handleOpenLegal} />
 
-      <main role="main" itemScope itemType="https://schema.org/WebPage">
+      <main role="main" className="overflow-x-clip" itemScope itemType="https://schema.org/WebPage">
         <Hero />
+        <CompanyProducts />
         <Projects />
         <TechStack />
-        <Pricing onOpenLegal={handleOpenLegal} />
+        <SubscriptionServices />
         <Contact onOpenLegal={handleOpenLegal} />
       </main>
 
@@ -475,7 +482,11 @@ export default function App() {
         initialTab={activeLegalTab}
         onClose={() => setLegalModalOpen(false)}
       />
+      <CartDrawer />
+      <CheckoutModal />
+      <PaymentResult />
     </div>
+    </CartProvider>
   );
 }
  

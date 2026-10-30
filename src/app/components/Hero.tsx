@@ -3,10 +3,97 @@ import { motion } from "motion/react";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 const STATS = [
-  { value: "4+", label: "Years in Market" },
+  { value: "10+", label: "Years Experience" },
   { value: "20+", label: "Products Delivered" },
   { value: "3", label: "Core Platforms" },
 ];
+
+const PORTRAIT_SRC = "/mohamed-fathalla.jpg";
+const PORTRAIT_ALT = "Mohamed Fathalla, founder of Switch Point";
+
+function Portrait({ size, chip }: { size: string; chip: boolean }) {
+  return (
+    <div className="relative" style={{ width: size, maxWidth: "100%" }}>
+      {/* Accent glow */}
+      <div
+        aria-hidden="true"
+        className="absolute pointer-events-none"
+        style={{
+          inset: "-14%",
+          background:
+            "radial-gradient(circle at 35% 30%, rgba(91,168,255,0.28) 0%, transparent 60%)," +
+            "radial-gradient(circle at 70% 75%, rgba(38,198,176,0.22) 0%, transparent 60%)",
+          filter: "blur(24px)",
+        }}
+      />
+      {/* Gradient ring */}
+      <div
+        className="relative rounded-[32px]"
+        style={{
+          padding: "2px",
+          background:
+            "linear-gradient(135deg, var(--md-primary) 0%, rgba(91,168,255,0.15) 45%, var(--md-secondary) 100%)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.45)",
+        }}
+      >
+        <div
+          className="rounded-[30px] overflow-hidden"
+          style={{ background: "var(--md-surface-container)", aspectRatio: "1 / 1" }}
+        >
+          <img
+            src={PORTRAIT_SRC}
+            alt={PORTRAIT_ALT}
+            width={800}
+            height={800}
+            loading="eager"
+            decoding="async"
+            className="w-full h-full"
+            style={{ objectFit: "cover", display: "block" }}
+          />
+        </div>
+      </div>
+      {chip && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: [0, -6, 0] }}
+          transition={{
+            opacity: { duration: 0.5, delay: 0.9 },
+            y: { duration: 4, delay: 1.2, repeat: Infinity, ease: "easeInOut" },
+          }}
+          className="absolute flex items-center rounded-full"
+          style={{
+            left: "-20px",
+            bottom: "28px",
+            padding: "10px 16px",
+            gap: "8px",
+            background: "rgba(20,24,32,0.82)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            border: "1px solid rgba(91,168,255,0.3)",
+            boxShadow: "0 12px 32px rgba(0,0,0,0.4)",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontSize: "12px",
+            fontWeight: 600,
+            color: "var(--md-on-surface)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span
+            aria-hidden="true"
+            className="rounded-full"
+            style={{
+              width: "8px",
+              height: "8px",
+              background: "var(--md-secondary)",
+              boxShadow: "0 0 10px var(--md-secondary)",
+            }}
+          />
+          Switch Point · Dubai &amp; Alexandria
+        </motion.div>
+      )}
+    </div>
+  );
+}
 
 const TAGS = ["Flutter", "Angular", "Firebase", "Material 3", "UI/UX Design"];
 
@@ -108,6 +195,16 @@ export function Hero() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* ── LEFT: Content ── */}
           <div className="lg:col-span-7 flex flex-col" style={{ gap: "32px" }}>
+            {/* Mobile portrait */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: [0.2, 0, 0, 1] }}
+              className="lg:hidden"
+            >
+              <Portrait size="160px" chip={false} />
+            </motion.div>
+
             {/* Agency label */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -128,7 +225,7 @@ export function Hero() {
                   textTransform: "uppercase",
                 }}
               >
-                Design Agency × Technical Studio
+                Mohamed Fathalla · Founder &amp; Lead Product Designer
               </span>
             </motion.div>
 
@@ -149,7 +246,7 @@ export function Hero() {
                   margin: 0,
                 }}
               >
-                High-performance{" "}
+                10+ years turning{" "}
                 <span
                   style={{
                     background:
@@ -159,9 +256,9 @@ export function Hero() {
                     backgroundClip: "text",
                   }}
                 >
-                  UI/UX Design
+                  design precision
                 </span>{" "}
-                &amp; Technical Project Management.
+                into shipped products.
               </h1>
             </motion.div>
 
@@ -180,10 +277,11 @@ export function Hero() {
                 margin: 0,
               }}
             >
-              Building scalable digital products with Flutter, Angular, and
-              Firebase. From Material 3 design systems to production-grade
-              backends — we close the gap between great design and robust
-              engineering.
+              I'm Mohamed Fathalla, a Senior UI/UX Designer and Flutter
+              Developer specialized in the Google ecosystem. Through Switch
+              Point, the studio I founded in 2025, I design and build Flutter
+              apps, Angular dashboards, and Firebase backends — from Tashil's
+              enterprise platform to retail analytics powered by Gemini AI.
             </motion.p>
 
             {/* CTA Buttons */}
@@ -288,138 +386,63 @@ export function Hero() {
             </motion.div>
           </div>
 
-          {/* ── RIGHT: Stats panel ── */}
+          {/* ── RIGHT: Portrait + stats ── */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.35, ease: [0.2, 0, 0, 1] }}
-            className="lg:col-span-5 hidden lg:flex flex-col"
-            style={{ gap: "16px" }}
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.2, 0, 0, 1] }}
+            className="lg:col-span-5 hidden lg:flex flex-col items-center"
+            style={{ gap: "28px" }}
           >
-            {/* Glassy card with stats */}
+            <Portrait size="min(400px, 100%)" chip />
+
             <div
-              className="rounded-[24px] flex flex-col"
+              className="rounded-[24px] grid grid-cols-3 w-full"
               style={{
+                maxWidth: "400px",
                 background: "var(--md-surface-container)",
                 border: "1px solid var(--md-outline-variant)",
-                padding: "32px",
-                gap: "32px",
+                padding: "4px 8px",
               }}
             >
-              {/* Decorative accent line */}
-              <div
-                className="rounded-full"
-                style={{
-                  width: "48px",
-                  height: "4px",
-                  background:
-                    "linear-gradient(90deg, var(--md-primary) 0%, var(--md-secondary) 100%)",
-                }}
-              />
-
-              <div
-                style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  color: "var(--md-on-surface-variant)",
-                  lineHeight: 1.6,
-                }}
-              >
-                We bridge the gap between design precision and engineering
-                excellence. Every pixel is intentional. Every line of code is
-                performant.
-              </div>
-
-              <div className="grid grid-cols-3" style={{ gap: "1px" }}>
-                {STATS.map((stat, i) => (
-                  <div
-                    key={stat.label}
-                    className="flex flex-col"
+              {STATS.map((stat, i) => (
+                <div
+                  key={stat.label}
+                  className="flex flex-col"
+                  style={{
+                    padding: "16px 12px",
+                    borderRight:
+                      i < STATS.length - 1
+                        ? "1px solid var(--md-outline-variant)"
+                        : "none",
+                    gap: "6px",
+                  }}
+                >
+                  <span
                     style={{
-                      padding: "20px 16px",
-                      borderRight:
-                        i < STATS.length - 1
-                          ? "1px solid var(--md-outline-variant)"
-                          : "none",
-                      gap: "6px",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontSize: "1.75rem",
+                      fontWeight: 800,
+                      color: "var(--md-primary)",
+                      letterSpacing: "-0.03em",
+                      lineHeight: 1,
                     }}
                   >
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "2rem",
-                        fontWeight: 800,
-                        color: "var(--md-primary)",
-                        letterSpacing: "-0.03em",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {stat.value}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "11px",
-                        fontWeight: 400,
-                        color: "var(--md-on-surface-variant)",
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      {stat.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Mini stack indicator */}
-              <div className="flex flex-col" style={{ gap: "12px" }}>
-                {[
-                  { label: "Mobile", value: "Flutter", pct: 85, color: "var(--md-primary)" },
-                  { label: "Backend", value: "Firebase", pct: 75, color: "var(--md-secondary)" },
-                  { label: "Web", value: "Angular", pct: 70, color: "#A78BFA" },
-                ].map((item) => (
-                  <div key={item.label} className="flex flex-col" style={{ gap: "6px" }}>
-                    <div className="flex justify-between items-center">
-                      <span
-                        style={{
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          color: "var(--md-on-surface-variant)",
-                        }}
-                      >
-                        {item.label}
-                      </span>
-                      <span
-                        style={{
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "var(--md-on-surface)",
-                        }}
-                      >
-                        {item.value}
-                      </span>
-                    </div>
-                    <div
-                      className="rounded-full overflow-hidden"
-                      style={{
-                        height: "4px",
-                        background: "var(--md-outline-variant)",
-                      }}
-                    >
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${item.pct}%` }}
-                        transition={{ duration: 1, delay: 0.7, ease: [0.2, 0, 0, 1] }}
-                        className="h-full rounded-full"
-                        style={{ background: item.color }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    {stat.value}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Roboto', sans-serif",
+                      fontSize: "11px",
+                      fontWeight: 400,
+                      color: "var(--md-on-surface-variant)",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {stat.label}
+                  </span>
+                </div>
+              ))}
             </div>
           </motion.div>
         </div>

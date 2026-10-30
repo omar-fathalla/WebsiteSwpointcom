@@ -1,3 +1,4 @@
+import { CartButton } from "./cart/CartDrawer";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
@@ -8,10 +9,11 @@ interface NavigationProps {
 
 const NAV_LINKS: { label: string; href: string; legalTab?: string }[] = [
   { label: "Tashil Platform", href: "#tashil" },
+  { label: "Products", href: "#products" },
   { label: "Work", href: "#work" },
   { label: "Services", href: "#services" },
   { label: "Process", href: "#process" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Subscriptions", href: "#subscriptions" },
   { label: "About Us", href: "#about-us", legalTab: "about" },
   { label: "Policies", href: "#privacy-policy", legalTab: "privacy" },
   { label: "Contact", href: "#contact" },
@@ -133,6 +135,7 @@ export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
 
           {/* ── CTA ── */}
           <div className="hidden md:flex items-center" style={{ gap: "12px" }}>
+            <CartButton />
             <button
               onClick={() => handleNavClick({ label: "Contact", href: "#contact" })}
               className="rounded-full transition-all duration-200"
@@ -160,6 +163,7 @@ export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
             </button>
           </div>
 
+          <CartButton className="md:hidden ml-auto mr-1" />
           {/* ── Mobile hamburger ── */}
           <button
             className="md:hidden rounded-xl transition-colors duration-200"
