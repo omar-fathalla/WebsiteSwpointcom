@@ -191,11 +191,6 @@ export function CompanyProducts() {
               <button onClick={subscribe} className="px-5 py-3 rounded-xl text-sm font-semibold inline-flex items-center gap-2 text-[#0D1117]" style={{ background: p.accent }}>
                 Subscribe to {p.name} <ArrowRight size={16} />
               </button>
-              {p.id === "tashil" && (
-                <button onClick={() => scrollToId("tashil")} className="px-5 py-3 rounded-xl text-sm font-semibold inline-flex items-center gap-2 bg-[var(--md-surface-container-high)] text-[var(--md-on-surface)] border border-[var(--md-outline-variant)] hover:bg-[var(--md-surface-container-highest)]">
-                  Explore the full Tashil experience <ArrowRight size={16} />
-                </button>
-              )}
               {p.url && (
                 <a href={p.url} target="_blank" rel="noopener noreferrer" className="px-5 py-3 rounded-xl text-sm font-semibold inline-flex items-center gap-2 text-[var(--md-on-surface-variant)] hover:text-[var(--md-on-surface)]">
                   Visit platform <ExternalLink size={15} />

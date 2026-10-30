@@ -940,9 +940,9 @@ export function Contact({ onOpenLegal }: Readonly<ContactProps>) {
               </span>
               <nav aria-label="Footer platform links" className="flex flex-col gap-2">
                 {[
-                  { label: "Work & Portfolio", href: "#work" },
-                  { label: "Studio Services", href: "#services" },
-                  { label: "Engineering Process", href: "#process" },
+                  { label: "Studio Works", href: "/works" },
+                  { label: "Studio Services", href: "/works#services" },
+                  { label: "Engineering Process", href: "/works#process" },
                   { label: "Subscriptions", href: "#subscriptions" },
                   { label: "Contact Us", href: "#contact" },
                 ].map((item) => (

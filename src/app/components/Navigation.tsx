@@ -1,4 +1,5 @@
 import { CartButton } from "./cart/CartDrawer";
+import { useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
@@ -8,11 +9,8 @@ interface NavigationProps {
 }
 
 const NAV_LINKS: { label: string; href: string; legalTab?: string }[] = [
-  { label: "Tashil Platform", href: "#tashil" },
   { label: "Products", href: "#products" },
-  { label: "Work", href: "#work" },
-  { label: "Services", href: "#services" },
-  { label: "Process", href: "#process" },
+  { label: "Studio", href: "/works" },
   { label: "Subscriptions", href: "#subscriptions" },
   { label: "About Us", href: "#about-us", legalTab: "about" },
   { label: "Policies", href: "#privacy-policy", legalTab: "privacy" },
@@ -23,6 +21,22 @@ export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeLink, setActiveLink] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  /** "/works" → route; "#x" → scroll on home, or go to "/#x" from other pages. */
+  const goTo = (href: string) => {
+    if (href.startsWith("/")) {
+      navigate(href);
+      if (!href.includes("#")) window.scrollTo({ top: 0 });
+      return;
+    }
+    if (location.pathname !== "/") {
+      navigate("/" + href);
+      return;
+    }
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 24);
@@ -36,8 +50,7 @@ export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
       onOpenLegal(link.legalTab);
       return;
     }
-    const el = document.querySelector(link.href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    goTo(link.href);
   };
 
   return (
@@ -60,12 +73,13 @@ export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
         >
           {/* ── Logo ── */}
           <a
-            href="#"
+            href="/"
             aria-label="Switch Point — Back to top"
             className="flex items-center shrink-0"
             style={{ gap: "10px" }}
             onClick={(e) => {
               e.preventDefault();
+              if (location.pathname !== "/") navigate("/");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
@@ -206,10 +220,7 @@ export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
                         onOpenLegal(link.legalTab);
                         return;
                       }
-                      setTimeout(() => {
-                        const el = document.querySelector(link.href);
-                        if (el) el.scrollIntoView({ behavior: "smooth" });
-                      }, 320);
+                      setTimeout(() => goTo(link.href), 320);
                     }}
                     className="rounded-xl text-left transition-colors duration-200"
                     style={{

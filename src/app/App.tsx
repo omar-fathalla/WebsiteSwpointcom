@@ -1,7 +1,8 @@
 import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
-import { Projects } from "./components/Projects";
-import { TechStack } from "./components/TechStack";
+import { WorksTeaser } from "./components/WorksTeaser";
+import { WorksPage } from "./pages/WorksPage";
+import { Routes, Route, useLocation } from "react-router";
 import { CompanyProducts } from "./components/CompanyProducts";
 import { SubscriptionServices } from "./components/SubscriptionServices";
 import { CartProvider } from "./context/CartContext";
@@ -351,7 +352,7 @@ const breadcrumbSchema = {
       "@type": "ListItem",
       position: 3,
       name: "Services",
-      item: `${SITE_CONFIG.url}/#services`,
+      item: `${SITE_CONFIG.url}/works#services`,
     },
     {
       "@type": "ListItem",
@@ -367,18 +368,18 @@ const breadcrumbSchema = {
 export default function App() {
   // Wrap SEO setup in useCallback to prevent recreation
   const setupSEO = useCallback(() => {
-    // Document title
-    document.title = SITE_CONFIG.title;
- 
-    // Primary meta tags
-    setMeta("description", SITE_CONFIG.description);
+    // Document title + description (route-specific ones are set by the route effect)
+    if (window.location.pathname === "/") {
+      document.title = SITE_CONFIG.title;
+      setMeta("description", SITE_CONFIG.description);
+    }
     setMeta("keywords", SITE_CONFIG.keywords);
     setMeta("author", SITE_CONFIG.author);
     setMeta("robots", "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1");
     setMeta("googlebot", "index, follow");
  
     // Canonical
-    setLink("canonical", `${SITE_CONFIG.url}/`);
+    if (window.location.pathname === "/") setLink("canonical", `${SITE_CONFIG.url}/`);
  
     // Open Graph
     setMeta("og:type", "website", true);
@@ -409,6 +410,25 @@ export default function App() {
     setJsonLd("ld-faq", faqSchema);
     setJsonLd("ld-breadcrumb", breadcrumbSchema);
   }, []);
+  const location = useLocation();
+
+  // Per-route title + scroll to /#section after cross-page navigation
+  useEffect(() => {
+    if (location.pathname === "/works") {
+      document.title = "Studio Works & Services — Switch Point";
+      setMeta("description", "Switch Point studio works and services: mobile, web, backend and UI/UX capabilities, our engineering process, and client platforms: LUX-Line, Emirates Delivery Hub, UK Transport & Removals, Chapeau ERP — Flutter, Angular, React and Firebase case studies.");
+      setLink("canonical", `${SITE_CONFIG.url}/works`);
+    } else {
+      document.title = SITE_CONFIG.title;
+      setMeta("description", SITE_CONFIG.description);
+      setLink("canonical", `${SITE_CONFIG.url}/`);
+    }
+    if (location.hash) {
+      const t = setTimeout(() => document.querySelector(location.hash)?.scrollIntoView({ behavior: "smooth" }), 150);
+      return () => clearTimeout(t);
+    }
+  }, [location.pathname, location.hash]);
+
   const [legalModalOpen, setLegalModalOpen] = useState(false);
   const [activeLegalTab, setActiveLegalTab] = useState("privacy");
 
@@ -437,7 +457,7 @@ export default function App() {
         setActiveLegalTab("about");
         setLegalModalOpen(true);
       } else if (hash === "tashil" || hash === "tashil-platform") {
-        const el = document.getElementById("tashil");
+        const el = document.getElementById("products");
         if (el) el.scrollIntoView({ behavior: "smooth" });
       }
     };
@@ -469,11 +489,20 @@ export default function App() {
       <Navigation onOpenLegal={handleOpenLegal} />
 
       <main role="main" className="overflow-x-clip" itemScope itemType="https://schema.org/WebPage">
-        <Hero />
-        <CompanyProducts />
-        <Projects />
-        <TechStack />
-        <SubscriptionServices />
+        <Routes>
+          <Route path="/works" element={<WorksPage />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <Hero />
+                <CompanyProducts />
+                <WorksTeaser />
+                <SubscriptionServices />
+              </>
+            }
+          />
+        </Routes>
         <Contact onOpenLegal={handleOpenLegal} />
       </main>
 

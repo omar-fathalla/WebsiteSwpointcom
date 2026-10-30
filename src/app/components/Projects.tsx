@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, X, CheckCircle, Zap, Target, Layers, Code2, ExternalLink, Globe, Monitor, Users, QrCode, BarChart2, MapPin, Bell, Calendar, Star, FileText, Truck, Package, Navigation, Route, Camera, Sparkles } from "lucide-react";
-import { TashilShowcase } from "./tashil/TashilShowcase";
 const ukTransportImg = "https://images.unsplash.com/photo-1551471698-c7787ff6b7ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxVSyUyMHRyYW5zcG9ydCUyMG1vdmluZyUyMHRydWNrJTIwcmVtb3ZhbHN8ZW58MXx8fHwxNzczNTMzMzU5fDA&ixlib=rb-4.1.0&q=80&w=1080";
 
 interface ArchLayer {
@@ -656,11 +655,8 @@ export function Projects() {
   return (
     <section id="work" aria-label="Featured case studies and portfolio projects" style={{ backgroundColor: "var(--md-surface)", padding: "96px 0" }}>
       <div className="max-w-7xl mx-auto" style={{ padding: "0 24px" }}>
-        {/* ── Flagship Enterprise Product Showcase: Tashil ── */}
-        <TashilShowcase />
-
         {/* ── Other Selected Works Divider & Header ── */}
-        <div className="pt-20 mt-20 border-t border-slate-800/80">
+        <div>
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
