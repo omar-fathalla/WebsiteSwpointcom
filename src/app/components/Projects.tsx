@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
+import { Dialog } from "../md3/Dialog";
+import { enter } from "../md3/motion";
+import { onRovingKeyDown } from "../md3/a11y";
+import { SectionHeader } from "../md3/Logo";
 import { ArrowUpRight, X, CheckCircle, Zap, Target, Layers, Code2, ExternalLink, Globe, Monitor, Users, QrCode, BarChart2, MapPin, Bell, Calendar, Star, FileText, Truck, Package, Navigation, Route, Camera, Sparkles } from "lucide-react";
 const ukTransportImg = "https://images.unsplash.com/photo-1551471698-c7787ff6b7ca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxVSyUyMHRyYW5zcG9ydCUyMG1vdmluZyUyMHRydWNrJTIwcmVtb3ZhbHN8ZW58MXx8fHwxNzczNTMzMzU5fDA&ixlib=rb-4.1.0&q=80&w=1080";
 
@@ -636,376 +640,91 @@ const PROJECTS: Project[] = [
   },
 ];
 
-const SECTION_LABEL_STYLE: React.CSSProperties = {
-  fontFamily: "'Plus Jakarta Sans', sans-serif",
-  fontSize: "11px",
-  fontWeight: 600,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase" as const,
-  color: "var(--md-primary)",
-};
 
 export function Projects() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const reduced = useReducedMotion();
 
   // Filter out tashil from the secondary list because Tashil has its flagship showcase at the top
   const otherProjects = PROJECTS.filter((p) => p.id !== "tashil");
   const expandedProject = PROJECTS.find((p) => p.id === expanded) ?? null;
+  const [last, setLast] = useState<Project | null>(null);
+  if (expandedProject && expandedProject !== last) setLast(expandedProject);
 
   return (
-    <section id="work" aria-label="Featured case studies and portfolio projects" style={{ backgroundColor: "var(--md-surface)", padding: "96px 0" }}>
-      <div className="max-w-7xl mx-auto" style={{ padding: "0 24px" }}>
-        {/* ── Other Selected Works Divider & Header ── */}
-        <div>
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
-            className="flex flex-col"
-            style={{ gap: "16px", marginBottom: "48px", maxWidth: "680px" }}
-          >
-            <span style={SECTION_LABEL_STYLE}>Selected Studio Works</span>
-            <h3
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
-                fontWeight: 700,
-                color: "var(--md-on-surface)",
-                letterSpacing: "-0.025em",
-                lineHeight: 1.25,
-                margin: 0,
-              }}
-            >
-              Other Selected Client Works
-            </h3>
-            <p
-              style={{
-                fontFamily: "'Roboto', sans-serif",
-                fontSize: "1rem",
-                fontWeight: 400,
-                lineHeight: 1.75,
-                color: "var(--md-on-surface-variant)",
-                margin: 0,
-              }}
-            >
-              Explore additional enterprise web applications, cross-platform mobile systems, and logistics solutions engineered by Switch Point studio.
-            </p>
-          </motion.div>
-
-          {/* ── Cards Grid ── */}
-          <div
-            className="grid grid-cols-1 md:grid-cols-2"
-            style={{ gap: "24px" }}
-          >
-            {otherProjects.map((project, i) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                index={i}
-                onExpand={() => setExpanded(project.id)}
-              />
-            ))}
-          </div>
+    <section id="work" aria-label="Featured case studies and portfolio projects" className="md-section bg-surface">
+      <div className="md-container">
+        <motion.div {...enter(reduced)} className="mb-10">
+          <SectionHeader as="h3" label="Selected Studio Works" title="Other Selected Client Works"
+            body="Explore additional enterprise web applications, cross-platform mobile systems, and logistics solutions engineered by Switch Point studio." />
+        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          {otherProjects.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} onExpand={() => setExpanded(project.id)} />
+          ))}
         </div>
       </div>
-
-      {/* ── Detail Modal ── */}
-      <AnimatePresence>
-        {expandedProject && (
-          <ProjectModal
-            project={expandedProject}
-            onClose={() => setExpanded(null)}
-          />
-        )}
-      </AnimatePresence>
+      {last && <ProjectModal project={last} open={!!expandedProject} onClose={() => setExpanded(null)} />}
     </section>
   );
 }
 
 /* ─────────────────── Project Card ─────────────────── */
-function ProjectCard({
-  project,
-  index,
-  onExpand,
-}: {
-  project: Project;
-  index: number;
-  onExpand: () => void;
-}) {
-  const [hovered, setHovered] = useState(false);
-
+function ProjectCard({ project, index, onExpand }: { project: Project; index: number; onExpand: () => void }) {
+  const reduced = useReducedMotion();
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 32 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-48px" }}
-      transition={{
-        duration: 0.55,
-        delay: index * 0.08,
-        ease: [0.2, 0, 0, 1],
-      }}
-      className="relative overflow-hidden cursor-pointer flex flex-col"
-      style={{
-        borderRadius: "16px",
-        background: "var(--md-surface-container-low)",
-        border: "1px solid var(--md-outline-variant)",
-        transform: hovered ? "scale(1.02)" : "scale(1)",
-        transition: "transform 300ms cubic-bezier(0.2,0,0,1), box-shadow 300ms cubic-bezier(0.2,0,0,1)",
-        boxShadow: hovered
-          ? `0 12px 48px rgba(0,0,0,0.5), 0 0 0 1px ${project.accentColor}33`
-          : "0 2px 8px rgba(0,0,0,0.2)",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={onExpand}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onExpand()}
-      aria-label={`View ${project.title} case study`}
-    >
-      {/* State Layer (MD3: 8% primary on hover) */}
-      <div
-        className="absolute inset-0 pointer-events-none z-10 rounded-[16px]"
-        style={{
-          backgroundColor: project.accentColor,
-          opacity: hovered ? 0.06 : 0,
-          transition: "opacity 300ms cubic-bezier(0.2,0,0,1)",
-        }}
-      />
-
-      {/* Image */}
-      <div
-        className="relative overflow-hidden"
-        style={{ height: "240px", borderRadius: "16px 16px 0 0" }}
-      >
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover"
-          style={{
-            transform: hovered ? "scale(1.04)" : "scale(1)",
-            transition: "transform 400ms cubic-bezier(0.2,0,0,1)",
-          }}
-          loading="lazy"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(13,17,23,0.8) 0%, rgba(13,17,23,0.1) 60%, transparent 100%)",
-          }}
-        />
-
-        {/* Category badge */}
-        <div className="absolute top-4 left-4">
-          <span
-            className="rounded-full"
-            style={{
-              padding: "4px 12px",
-              background: "rgba(13,17,23,0.75)",
-              backdropFilter: "blur(8px)",
-              border: `1px solid ${project.accentColor}44`,
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: "11px",
-              fontWeight: 600,
-              color: project.accentColor,
-              letterSpacing: "0.06em",
-            }}
-          >
-            {project.category}
-          </span>
-        </div>
-
-        {/* Top-right badges */}
-        <div className="absolute top-4 right-4 flex flex-col items-end" style={{ gap: "6px" }}>
+    <motion.article {...enter(reduced, (index % 2) * 0.05)}
+      className="md-card md-card-outlined md-card-interactive state cursor-pointer flex flex-col overflow-hidden"
+      onClick={onExpand} role="button" tabIndex={0}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), onExpand())}
+      aria-label={`View ${project.title} case study`}>
+      <div className="relative aspect-[16/9] overflow-hidden bg-surface-container-highest">
+        <img src={project.image} alt={project.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+      </div>
+      <div className="flex flex-col flex-1 gap-4 p-4 md:p-6">
+        <div className="flex flex-wrap gap-2">
+          <span className="md-chip" style={{ height: 24, paddingInline: 8 }}>{project.category}</span>
           {project.liveUrl && (
-            <span
-              className="rounded-full flex items-center"
-              style={{
-                padding: "4px 10px",
-                gap: "4px",
-                background: `${project.accentColor}cc`,
-                backdropFilter: "blur(8px)",
-                border: `1px solid ${project.accentColor}`,
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "10px",
-                fontWeight: 700,
-                color: "#fff",
-                letterSpacing: "0.06em",
-              }}
-            >
-              <Globe size={9} />
-              <span>LIVE</span>
+            <span className="md-chip" style={{ height: 24, paddingInline: 8, background: "var(--md-sys-color-tertiary-container)", color: "var(--md-sys-color-on-tertiary-container)", borderColor: "transparent" }}>
+              <Globe size={14} /> Live
             </span>
           )}
           {project.architecture && (
-            <span
-              className="rounded-full flex items-center"
-              style={{
-                padding: "4px 10px",
-                gap: "4px",
-                background: "rgba(13,17,23,0.75)",
-                backdropFilter: "blur(8px)",
-                border: `1px solid ${project.accentColor}44`,
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "10px",
-                fontWeight: 600,
-                color: "rgba(255,255,255,0.7)",
-                letterSpacing: "0.04em",
-              }}
-            >
-              <Layers size={10} />
-              <span>{project.id === "uk-transport" ? "App Router" : project.id === "emirates" ? "Angular + Flutter" : "Clean Arch"}</span>
+            <span className="md-chip" style={{ height: 24, paddingInline: 8, background: "var(--md-sys-color-secondary-container)", color: "var(--md-sys-color-on-secondary-container)", borderColor: "transparent" }}>
+              <Layers size={14} /> {project.id === "uk-transport" ? "App Router" : project.id === "emirates" ? "Angular + Flutter" : "Clean Arch"}
             </span>
           )}
         </div>
-      </div>
-
-      {/* Content */}
-      <div
-        className="flex flex-col flex-1"
-        style={{ padding: "24px", gap: "16px" }}
-      >
-        {/* Title row */}
-        <div className="flex items-start justify-between" style={{ gap: "12px" }}>
-          <div className="flex flex-col" style={{ gap: "4px" }}>
-            <h3
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "1.1rem",
-                fontWeight: 700,
-                color: "var(--md-on-surface)",
-                letterSpacing: "-0.015em",
-                margin: 0,
-                lineHeight: 1.3,
-              }}
-            >
-              {project.title}
-            </h3>
-            <span
-              style={{
-                fontFamily: "'Roboto', sans-serif",
-                fontSize: "13px",
-                fontWeight: 400,
-                color: "var(--md-on-surface-variant)",
-              }}
-            >
-              {project.subtitle}
-            </span>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1 min-w-0">
+            <h3 className="text-title-large text-on-surface">{project.title}</h3>
+            <span className="text-body-medium text-on-surface-variant">{project.subtitle}</span>
           </div>
-
-          <div
-            className="flex items-center justify-center shrink-0 rounded-xl transition-all duration-300"
-            style={{
-              width: "36px",
-              height: "36px",
-              background: hovered ? project.accentColor : "var(--md-surface-container)",
-              color: hovered ? "#fff" : "var(--md-on-surface-variant)",
-            }}
-          >
-            <ArrowUpRight size={16} />
-          </div>
+          <span className="md-icon-btn md-icon-btn-tonal shrink-0" aria-hidden="true"><ArrowUpRight /></span>
         </div>
-
-        {/* Code stats row for enhanced projects */}
         {project.codeStats && (
-          <div className="grid grid-cols-2" style={{ gap: "8px" }}>
+          <dl className="grid grid-cols-2 gap-2">
             {project.codeStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="flex flex-col"
-                style={{
-                  padding: "8px 10px",
-                  borderRadius: "8px",
-                  background: "var(--md-surface-container)",
-                  border: "1px solid var(--md-outline-variant)",
-                  gap: "2px",
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "9px",
-                    fontWeight: 600,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: "var(--md-on-surface-variant)",
-                  }}
-                >
-                  {stat.label}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "12px",
-                    fontWeight: 700,
-                    color: project.accentColor,
-                  }}
-                >
-                  {stat.value}
-                </span>
+              <div key={stat.label} className="rounded-[12px] px-3 py-2 bg-surface-container-high flex flex-col">
+                <dt className="text-label-medium text-on-surface-variant">{stat.label}</dt>
+                <dd className="text-title-small text-on-surface">{stat.value}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         )}
-
-        {/* Problem teaser */}
-        <p
-          style={{
-            fontFamily: "'Roboto', sans-serif",
-            fontSize: "13px",
-            fontWeight: 400,
-            lineHeight: 1.7,
-            color: "var(--md-on-surface-variant)",
-            margin: 0,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
-          {project.problem}
-        </p>
-
-        {/* Divider – Outline Variant, inset */}
-        <div
-          style={{
-            height: "1px",
-            background: "var(--md-outline-variant)",
-            marginLeft: "0",
-            marginRight: "0",
-          }}
-        />
-
-        {/* Tags */}
-        <div className="flex flex-wrap" style={{ gap: "6px" }}>
-          {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full"
-              style={{
-                padding: "3px 10px",
-                background: "var(--md-surface-container)",
-                border: "1px solid var(--md-outline-variant)",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "11px",
-                fontWeight: 500,
-                color: "var(--md-on-surface-variant)",
-              }}
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        <p className="text-body-medium text-on-surface-variant line-clamp-2">{project.problem}</p>
+        <hr className="md-divider mt-auto" />
+        <ul className="flex flex-wrap gap-2" aria-label="Tags">
+          {project.tags.map((tag) => <li key={tag} className="md-chip" style={{ height: 28 }}>{tag}</li>)}
+        </ul>
       </div>
     </motion.article>
   );
 }
 
 /* ─────────────────── Dashboard Icon Map ─────────────────── */
-function DashboardIcon({ name, size = 15, color }: { name: string; size?: number; color: string }) {
-  const props = { size, style: { color } };
+function DashboardIcon({ name, size = 18 }: { name: string; size?: number }) {
+  const props = { size };
   switch (name) {
     case "monitor":    return <Monitor {...props} />;
     case "users":      return <Users {...props} />;
@@ -1025,761 +744,155 @@ function DashboardIcon({ name, size = 15, color }: { name: string; size?: number
   }
 }
 
-/* ─────────────────── Detail Modal ─────────────────── */
-function ProjectModal({
-  project,
-  onClose,
-}: {
-  project: Project;
-  onClose: () => void;
-}) {
-  const [activeTab, setActiveTab] = useState<"overview" | "architecture" | "features" | "dashboard">(
-    "overview"
-  );
+const strong = (t: string) => <span className="text-on-surface" style={{ fontWeight: 500 }}>{t}</span>;
 
+/* ─────────────────── Detail Modal ─────────────────── */
+function ProjectModal({ project, open, onClose }: { project: Project; open: boolean; onClose: () => void }) {
+  const [activeTab, setActiveTab] = useState<"overview" | "architecture" | "features" | "dashboard">("overview");
   const hasExtendedContent = !!project.architecture;
   const hasDashboard = !!project.dashboardFeatures;
+  const tabs = [
+    { id: "overview", label: "Overview", icon: <Target size={18} /> },
+    { id: "architecture", label: "Architecture", icon: <Layers size={18} /> },
+    { id: "features", label: "Features", icon: <Code2 size={18} /> },
+    ...(hasDashboard ? [{ id: "dashboard", label: project.liveTabLabel ?? "Web Dashboard", icon: <Monitor size={18} /> }] : []),
+  ] as { id: "overview" | "architecture" | "features" | "dashboard"; label: string; icon: React.ReactNode }[];
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
-      style={{ backgroundColor: "rgba(8,9,13,0.85)", backdropFilter: "blur(12px)" }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 24 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 12 }}
-        transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-        className="relative overflow-hidden w-full flex flex-col"
-        style={{
-          maxWidth: "760px",
-          maxHeight: "90vh",
-          borderRadius: "24px",
-          background: "var(--md-surface-container-low)",
-          border: `1px solid ${project.accentColor}30`,
-          boxShadow: `0 32px 96px rgba(0,0,0,0.6), 0 0 0 1px ${project.accentColor}22`,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Hero image */}
-        <div className="relative overflow-hidden shrink-0" style={{ height: "220px" }}>
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-cover"
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to top, rgba(13,17,23,1) 0%, rgba(13,17,23,0.4) 50%, transparent 100%)",
-            }}
-          />
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 rounded-full flex items-center justify-center transition-all duration-200"
-            style={{
-              width: "40px",
-              height: "40px",
-              background: "rgba(13,17,23,0.7)",
-              backdropFilter: "blur(8px)",
-              border: "1px solid rgba(189,195,206,0.15)",
-              color: "var(--md-on-surface)",
-              cursor: "pointer",
-            }}
-            aria-label="Close"
-          >
-            <X size={18} />
-          </button>
-
-          {/* Title over image */}
-          <div className="absolute bottom-0 left-0 right-0" style={{ padding: "20px 24px" }}>
-            <div className="flex flex-wrap" style={{ gap: "6px", marginBottom: "8px" }}>
-              {project.tags.slice(0, 4).map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full"
-                  style={{
-                    padding: "3px 10px",
-                    background: "rgba(13,17,23,0.7)",
-                    border: `1px solid ${project.accentColor}40`,
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "11px",
-                    fontWeight: 500,
-                    color: project.accentColor,
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
+    <Dialog open={open} onClose={onClose} label={`${project.title} case study`} size="wide">
+      <div className="overflow-y-auto flex flex-col md:max-w-[800px]">
+        <div className="relative shrink-0 aspect-[21/9] max-h-[240px] bg-surface-container-highest">
+          <img src={project.image} alt={project.title} className="w-full h-full object-cover" decoding="async" />
+          <button onClick={onClose} className="md-icon-btn md-icon-btn-tonal absolute top-3 right-3" aria-label="Close"><X /></button>
+        </div>
+        <div className="px-6 pt-5 flex flex-col gap-2">
+          <ul className="flex flex-wrap gap-2">{project.tags.slice(0, 4).map((tag) => <li key={tag} className="md-chip" style={{ height: 28 }}>{tag}</li>)}</ul>
+          <h2 className="text-headline-small text-on-surface">{project.title}</h2>
+          <p className="text-body-medium text-on-surface-variant">{project.subtitle}</p>
+          {(project.liveUrl || project.githubUrl) && (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="md-btn md-btn-tonal has-icon"><Globe /> Live Demo</a>}
+              {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="md-btn md-btn-outlined has-icon"><ExternalLink /> Repo</a>}
             </div>
-            <h2
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "1.4rem",
-                fontWeight: 700,
-                color: "#fff",
-                letterSpacing: "-0.025em",
-                margin: 0,
-                lineHeight: 1.2,
-              }}
-            >
-              {project.title}
-            </h2>
-            <p
-              style={{
-                fontFamily: "'Roboto', sans-serif",
-                fontSize: "13px",
-                color: "rgba(255,255,255,0.6)",
-                margin: "4px 0 0",
-              }}
-            >
-              {project.subtitle}
-            </p>
-          </div>
+          )}
         </div>
 
-        {/* Tab bar (only for extended projects) */}
         {hasExtendedContent && (
-          <div
-            className="flex shrink-0 overflow-x-auto"
-            style={{
-              borderBottom: "1px solid var(--md-outline-variant)",
-              padding: "0 24px",
-              gap: "0",
-            }}
-          >
-            {(
-              [
-                { id: "overview", label: "Overview", icon: <Target size={13} /> },
-                { id: "architecture", label: "Architecture", icon: <Layers size={13} /> },
-                { id: "features", label: "Features", icon: <Code2 size={13} /> },
-                ...(hasDashboard ? [{ id: "dashboard", label: project.liveTabLabel ?? "Web Dashboard", icon: <Monitor size={13} /> }] : []),
-              ] as { id: "overview" | "architecture" | "features" | "dashboard"; label: string; icon: React.ReactNode }[]
-            ).map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className="flex items-center shrink-0"
-                style={{
-                  gap: "6px",
-                  padding: "12px 16px",
-                  background: "transparent",
-                  border: "none",
-                  borderBottom: activeTab === tab.id ? `2px solid ${project.accentColor}` : "2px solid transparent",
-                  cursor: "pointer",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "12px",
-                  fontWeight: activeTab === tab.id ? 700 : 500,
-                  color: activeTab === tab.id ? project.accentColor : "var(--md-on-surface-variant)",
-                  transition: "color 200ms, border-color 200ms",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {tab.icon}
-                {tab.label}
+          <div role="tablist" aria-label="Case study sections" onKeyDown={onRovingKeyDown} className="md-tabs mt-4 overflow-x-auto shrink-0" style={{ justifyContent: "flex-start" }}>
+            {tabs.map((tab) => (
+              <button key={tab.id} role="tab" aria-selected={activeTab === tab.id} tabIndex={activeTab === tab.id ? 0 : -1} onClick={() => setActiveTab(tab.id)} className="md-tab" style={{ flex: "0 0 auto", paddingInline: 16 }}>
+                <span className="md-tab-label">{tab.icon} {tab.label}</span>
               </button>
             ))}
-
-            {/* Action links */}
-            <div className="flex items-center ml-auto shrink-0" style={{ gap: "16px" }}>
-              {project.liveUrl && (
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center"
-                  style={{
-                    gap: "5px",
-                    padding: "12px 0",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    color: project.accentColor,
-                    textDecoration: "none",
-                    transition: "opacity 200ms",
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.75")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                >
-                  <Globe size={12} />
-                  Live Demo
-                </a>
-              )}
-              {project.githubUrl && (
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center"
-                  style={{
-                    gap: "6px",
-                    padding: "12px 0",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    color: "var(--md-on-surface-variant)",
-                    textDecoration: "none",
-                    transition: "color 200ms",
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = project.accentColor)
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "var(--md-on-surface-variant)")
-                  }
-                >
-                  <ExternalLink size={12} />
-                  Repo
-                </a>
-              )}
-            </div>
           </div>
         )}
 
-        {/* Scrollable body */}
-        <div className="overflow-y-auto flex flex-col" style={{ padding: "28px 28px", gap: "24px" }}>
-
-          {/* ── OVERVIEW TAB (or default for non-extended) ── */}
+        <div role={hasExtendedContent ? "tabpanel" : undefined} className="flex flex-col gap-6 p-6">
           {(!hasExtendedContent || activeTab === "overview") && (
             <>
               {[
-                {
-                  icon: <Target size={16} />,
-                  label: "The Problem",
-                  content: project.problem,
-                  color: "#CF6679",
-                },
-                {
-                  icon: <Zap size={16} />,
-                  label: "The Solution",
-                  content: project.solution,
-                  color: project.accentColor,
-                },
-                {
-                  icon: <CheckCircle size={16} />,
-                  label: "The Impact",
-                  content: project.impact,
-                  color: "#26C6B0",
-                },
+                { icon: <Target size={20} />, label: "The Problem", content: project.problem, cls: "text-error" },
+                { icon: <Zap size={20} />, label: "The Solution", content: project.solution, cls: "text-primary" },
+                { icon: <CheckCircle size={20} />, label: "The Impact", content: project.impact, cls: "text-tertiary" },
               ].map((block) => (
-                <div key={block.label} className="flex flex-col" style={{ gap: "10px" }}>
-                  <div className="flex items-center" style={{ gap: "8px" }}>
-                    <span style={{ color: block.color }}>{block.icon}</span>
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "11px",
-                        fontWeight: 600,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        color: block.color,
-                      }}
-                    >
-                      {block.label}
-                    </span>
-                  </div>
-                  <p
-                    style={{
-                      fontFamily: "'Roboto', sans-serif",
-                      fontSize: "14px",
-                      fontWeight: 400,
-                      lineHeight: 1.75,
-                      color: "var(--md-on-surface-variant)",
-                      margin: 0,
-                      paddingLeft: "24px",
-                    }}
-                  >
-                    {block.content}
-                  </p>
+                <div key={block.label} className="flex flex-col gap-2">
+                  <h3 className={`flex items-center gap-2 text-title-medium ${block.cls}`}>{block.icon}{block.label}</h3>
+                  <p className="text-body-medium text-on-surface-variant pl-7">{block.content}</p>
                 </div>
               ))}
-
-              {/* Live Demo CTA */}
               {project.liveUrl && (
-                <div
-                  style={{
-                    padding: "14px 18px",
-                    borderRadius: "12px",
-                    background: `${project.accentColor}0d`,
-                    border: `1px solid ${project.accentColor}30`,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "14px",
-                  }}
-                >
-                  <div
-                    className="shrink-0 flex items-center justify-center rounded-xl"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      background: `${project.accentColor}1a`,
-                      border: `1px solid ${project.accentColor}35`,
-                    }}
-                  >
-                    <Globe size={18} style={{ color: project.accentColor }} />
-                  </div>
-                  <div className="flex flex-col flex-1" style={{ gap: "2px" }}>
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "13px",
-                        fontWeight: 700,
-                        color: "var(--md-on-surface)",
-                      }}
-                    >
-                      {project.liveLabel ?? "Web Dashboard — Live"}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "12px",
-                        color: "var(--md-on-surface-variant)",
-                      }}
-                    >
-                      {project.liveDescription ?? (
-                        <>
-                          Supervisor command centre at{" "}
-                          <span style={{ color: project.accentColor }}>
-                            {project.liveDomain ?? new URL(project.liveUrl!).hostname}
-                          </span>
-                        </>
-                      )}
+                <div className="md-card md-card-filled p-4 flex items-center gap-4">
+                  <span className="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-primary-container text-on-primary-container"><Globe size={20} /></span>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="text-title-small text-on-surface">{project.liveLabel ?? "Web Dashboard — Live"}</span>
+                    <span className="text-body-small text-on-surface-variant break-words">
+                      {project.liveDescription ?? (<>Supervisor command centre at <span className="text-primary">{project.liveDomain ?? new URL(project.liveUrl!).hostname}</span></>)}
                     </span>
                   </div>
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 flex items-center rounded-full"
-                    style={{
-                      gap: "6px",
-                      padding: "8px 16px",
-                      background: project.accentColor,
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      color: "#fff",
-                      textDecoration: "none",
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Globe size={12} />
-                    Visit
-                  </a>
+                  <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="md-btn md-btn-filled trailing-icon shrink-0">Visit <ArrowUpRight /></a>
                 </div>
               )}
             </>
           )}
 
-          {/* ── ARCHITECTURE TAB ── */}
           {hasExtendedContent && activeTab === "architecture" && project.architecture && (
-            <div className="flex flex-col" style={{ gap: "16px" }}>
-              <p
-                style={{
-                  fontFamily: "'Roboto', sans-serif",
-                  fontSize: "13px",
-                  lineHeight: 1.7,
-                  color: "var(--md-on-surface-variant)",
-                  margin: 0,
-                }}
-              >
+            <div className="flex flex-col gap-4">
+              <p className="text-body-medium text-on-surface-variant">
                 {project.id === "uk-transport" ? (
-                  <>
-                    The platform is structured around{" "}
-                    <span style={{ color: "var(--md-on-surface)", fontWeight: 600 }}>
-                      Next.js App Router
-                    </span>{" "}
-                    with four independently optimised layers — presentation, rendering, data, and edge deployment — each with a single, clearly scoped responsibility.
-                  </>
+                  <>The platform is structured around {strong("Next.js App Router")} with four independently optimised layers — presentation, rendering, data, and edge deployment — each with a single, clearly scoped responsibility.</>
                 ) : project.id === "emirates" ? (
-                  <>
-                    The platform combines an{" "}
-                    <span style={{ color: "var(--md-on-surface)", fontWeight: 600 }}>
-                      Angular 16 web dashboard
-                    </span>{" "}
-                    and a{" "}
-                    <span style={{ color: "var(--md-on-surface)", fontWeight: 600 }}>
-                      Flutter courier app
-                    </span>
-                    , unified by a shared Firestore real-time backend and Cloud Functions business logic — four independently deployable layers with zero shared code coupling.
-                  </>
+                  <>The platform combines an {strong("Angular 16 web dashboard")} and a {strong("Flutter courier app")}, unified by a shared Firestore real-time backend and Cloud Functions business logic — four independently deployable layers with zero shared code coupling.</>
                 ) : (
-                  <>
-                    The app follows strict{" "}
-                    <span style={{ color: "var(--md-on-surface)", fontWeight: 600 }}>
-                      Clean Architecture
-                    </span>{" "}
-                    with three independent layers and a GetIt/Injectable DI container — each layer is
-                    tested in isolation and can evolve independently.
-                  </>
+                  <>The app follows strict {strong("Clean Architecture")} with three independent layers and a GetIt/Injectable DI container — each layer is tested in isolation and can evolve independently.</>
                 )}
               </p>
-
-              {/* Architecture layers */}
-              <div className="flex flex-col" style={{ gap: "12px" }}>
+              <ol className="flex flex-col gap-3">
                 {project.architecture.map((layer, idx) => (
-                  <div
-                    key={layer.label}
-                    className="flex flex-col"
-                    style={{
-                      padding: "16px",
-                      borderRadius: "12px",
-                      background: "var(--md-surface-container)",
-                      border: `1px solid ${layer.color}25`,
-                      gap: "8px",
-                    }}
-                  >
-                    {/* Layer header */}
-                    <div className="flex items-center justify-between" style={{ gap: "8px" }}>
-                      <div className="flex items-center" style={{ gap: "8px" }}>
-                        <div
-                          className="flex items-center justify-center rounded-md shrink-0"
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            background: `${layer.color}20`,
-                            border: `1px solid ${layer.color}40`,
-                            color: layer.color,
-                            fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            fontSize: "11px",
-                            fontWeight: 700,
-                          }}
-                        >
-                          {idx + 1}
-                        </div>
-                        <span
-                          style={{
-                            fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            fontSize: "13px",
-                            fontWeight: 700,
-                            color: layer.color,
-                          }}
-                        >
-                          {layer.label}
-                        </span>
-                      </div>
+                  <li key={layer.label} className="md-card md-card-outlined p-4 flex flex-col gap-2">
+                    <div className="flex items-center gap-3">
+                      <span className="w-7 h-7 rounded-full grid place-items-center text-label-large bg-secondary-container text-on-secondary-container shrink-0">{idx + 1}</span>
+                      <span className="text-title-small text-on-surface">{layer.label}</span>
                     </div>
-
-                    {/* Packages */}
-                    <div
-                      style={{
-                        padding: "6px 10px",
-                        borderRadius: "6px",
-                        background: "rgba(0,0,0,0.2)",
-                        border: "1px solid var(--md-outline-variant)",
-                        fontFamily: "'Roboto Mono', 'Courier New', monospace",
-                        fontSize: "10px",
-                        color: `${layer.color}cc`,
-                        letterSpacing: "0.02em",
-                      }}
-                    >
-                      {layer.packages}
-                    </div>
-
-                    {/* Detail */}
-                    <p
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "13px",
-                        lineHeight: 1.65,
-                        color: "var(--md-on-surface-variant)",
-                        margin: 0,
-                      }}
-                    >
-                      {layer.detail}
-                    </p>
-                  </div>
+                    <code className="block rounded-[8px] px-3 py-2 bg-surface-container-highest text-on-surface-variant text-body-small break-words" style={{ fontFamily: "'Roboto Mono', ui-monospace, monospace" }}>{layer.packages}</code>
+                    <p className="text-body-medium text-on-surface-variant">{layer.detail}</p>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
           )}
 
-          {/* ── FEATURES TAB ── */}
           {hasExtendedContent && activeTab === "features" && project.highlights && (
-            <div className="flex flex-col" style={{ gap: "16px" }}>
-              <p
-                style={{
-                  fontFamily: "'Roboto', sans-serif",
-                  fontSize: "13px",
-                  lineHeight: 1.7,
-                  color: "var(--md-on-surface-variant)",
-                  margin: 0,
-                }}
-              >
-                {project.featuresDescription ?? (
-                  <>
-                    The MVP ships with{" "}
-                    <span style={{ color: "var(--md-on-surface)", fontWeight: 600 }}>
-                      {project.highlights.length} production features
-                    </span>{" "}
-                    across six screen modules (auth, home, attendance, profile, admin, settings).
-                  </>
-                )}
+            <div className="flex flex-col gap-4">
+              <p className="text-body-medium text-on-surface-variant">
+                {project.featuresDescription ?? (<>The MVP ships with {strong(`${project.highlights.length} production features`)} across six screen modules (auth, home, attendance, profile, admin, settings).</>)}
               </p>
-
-              <div className="flex flex-col" style={{ gap: "8px" }}>
-                {project.highlights.map((highlight, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start"
-                    style={{
-                      gap: "12px",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      background: "var(--md-surface-container)",
-                      border: "1px solid var(--md-outline-variant)",
-                    }}
-                  >
-                    <div
-                      className="shrink-0 flex items-center justify-center rounded-full"
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        background: `${project.accentColor}18`,
-                        border: `1px solid ${project.accentColor}35`,
-                        marginTop: "1px",
-                      }}
-                    >
-                      <CheckCircle size={11} style={{ color: project.accentColor }} />
-                    </div>
-                    <span
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "13px",
-                        lineHeight: 1.6,
-                        color: "var(--md-on-surface-variant)",
-                      }}
-                    >
-                      {highlight}
-                    </span>
-                  </div>
+              <ul className="md-card md-card-outlined divide-y divide-outline-variant">
+                {project.highlights.map((h, idx) => (
+                  <li key={idx} className="flex items-start gap-3 px-4 py-3 text-body-medium text-on-surface-variant">
+                    <CheckCircle size={20} className="shrink-0 text-primary" />{h}
+                  </li>
                 ))}
-              </div>
-
-              {/* Full tech stack */}
-              <div
-                style={{
-                  padding: "16px",
-                  borderRadius: "12px",
-                  background: "var(--md-surface-container)",
-                  border: `1px solid ${project.accentColor}25`,
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "11px",
-                    fontWeight: 600,
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: project.accentColor,
-                    display: "block",
-                    marginBottom: "10px",
-                  }}
-                >
-                  Full Tech Stack
-                </span>
-                <div className="flex flex-wrap" style={{ gap: "6px" }}>
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full"
-                      style={{
-                        padding: "4px 12px",
-                        background: `${project.accentColor}15`,
-                        border: `1px solid ${project.accentColor}30`,
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "11px",
-                        fontWeight: 500,
-                        color: project.accentColor,
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              </ul>
+              <div className="md-card md-card-filled p-4">
+                <h4 className="text-title-small text-on-surface mb-3">Full Tech Stack</h4>
+                <ul className="flex flex-wrap gap-2">{project.tags.map((tag) => <li key={tag} className="md-chip">{tag}</li>)}</ul>
               </div>
             </div>
           )}
 
-          {/* ── DASHBOARD TAB ── */}
           {hasExtendedContent && activeTab === "dashboard" && project.dashboardFeatures && (
-            <div className="flex flex-col" style={{ gap: "20px" }}>
-              {/* Header block */}
-              <div
-                style={{
-                  padding: "16px 20px",
-                  borderRadius: "12px",
-                  background: `${project.accentColor}0d`,
-                  border: `1px solid ${project.accentColor}28`,
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "14px",
-                }}
-              >
-                <div
-                  className="shrink-0 flex items-center justify-center rounded-xl"
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    background: `${project.accentColor}1a`,
-                    border: `1px solid ${project.accentColor}38`,
-                  }}
-                >
-                  <Globe size={20} style={{ color: project.accentColor }} />
-                </div>
-                <div className="flex flex-col" style={{ gap: "4px" }}>
-                  <div className="flex items-center" style={{ gap: "8px" }}>
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "14px",
-                        fontWeight: 700,
-                        color: "var(--md-on-surface)",
-                      }}
-                    >
-                      {project.liveLabel ?? "Supervisor Web Dashboard"}
-                    </span>
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center rounded-full"
-                      style={{
-                        gap: "4px",
-                        padding: "3px 10px",
-                        background: project.accentColor,
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "10px",
-                        fontWeight: 700,
-                        color: "#fff",
-                        textDecoration: "none",
-                        letterSpacing: "0.04em",
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Globe size={9} />
-                      LIVE
-                    </a>
+            <div className="flex flex-col gap-4">
+              <div className="md-card md-card-filled p-4 flex items-start gap-4">
+                <span className="w-11 h-11 shrink-0 rounded-full grid place-items-center bg-primary-container text-on-primary-container"><Globe size={20} /></span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-title-small text-on-surface">{project.liveLabel ?? "Supervisor Web Dashboard"}</span>
+                    <span className="md-chip" style={{ height: 24, paddingInline: 8, background: "var(--md-sys-color-tertiary-container)", color: "var(--md-sys-color-on-tertiary-container)", borderColor: "transparent" }}><Globe size={14} /> Live</span>
                   </div>
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      fontFamily: "'Roboto Mono', monospace",
-                      fontSize: "12px",
-                      color: project.accentColor,
-                      textDecoration: "none",
-                      opacity: 0.9,
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {project.liveDomain ?? "tashil.sw-point.com"}
-                  </a>
-                  <p
-                    style={{
-                      fontFamily: "'Roboto', sans-serif",
-                      fontSize: "12px",
-                      lineHeight: 1.6,
-                      color: "var(--md-on-surface-variant)",
-                      margin: "4px 0 0",
-                    }}
-                  >
-                    {project.liveDescription ?? "The companion admin portal shares the same Firestore backend as the Flutter mobile app — supervisors get a full browser-based command centre with no app install required."}
-                  </p>
+                  <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-body-medium text-primary hover:underline break-all">{project.liveDomain ?? "tashil.sw-point.com"}</a>
+                  <p className="text-body-small text-on-surface-variant">{project.liveDescription ?? "The companion admin portal shares the same Firestore backend as the Flutter mobile app — supervisors get a full browser-based command centre with no app install required."}</p>
                 </div>
               </div>
-
-              {/* Feature cards grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: "12px" }}>
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {project.dashboardFeatures.map((feature) => (
-                  <div
-                    key={feature.label}
-                    className="flex flex-col"
-                    style={{
-                      padding: "16px",
-                      borderRadius: "12px",
-                      background: "var(--md-surface-container)",
-                      border: "1px solid var(--md-outline-variant)",
-                      gap: "10px",
-                    }}
-                  >
-                    <div className="flex items-center" style={{ gap: "10px" }}>
-                      <div
-                        className="shrink-0 flex items-center justify-center rounded-lg"
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          background: `${project.accentColor}18`,
-                          border: `1px solid ${project.accentColor}30`,
-                        }}
-                      >
-                        <DashboardIcon name={feature.icon} size={15} color={project.accentColor} />
-                      </div>
-                      <span
-                        style={{
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          fontSize: "13px",
-                          fontWeight: 700,
-                          color: "var(--md-on-surface)",
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {feature.label}
-                      </span>
+                  <li key={feature.label} className="md-card md-card-outlined p-4 flex gap-3">
+                    <span className="w-9 h-9 shrink-0 rounded-full grid place-items-center bg-secondary-container text-on-secondary-container"><DashboardIcon name={feature.icon} /></span>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <span className="text-title-small text-on-surface">{feature.label}</span>
+                      <span className="text-body-small text-on-surface-variant">{feature.detail}</span>
                     </div>
-                    <p
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "12px",
-                        lineHeight: 1.65,
-                        color: "var(--md-on-surface-variant)",
-                        margin: 0,
-                      }}
-                    >
-                      {feature.detail}
-                    </p>
-                  </div>
+                  </li>
                 ))}
-              </div>
-
-              {/* Bottom CTA */}
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center rounded-xl"
-                style={{
-                  gap: "8px",
-                  padding: "14px 24px",
-                  background: `${project.accentColor}15`,
-                  border: `1px solid ${project.accentColor}35`,
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "13px",
-                  fontWeight: 700,
-                  color: project.accentColor,
-                  textDecoration: "none",
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Globe size={14} />
-                {project.liveTabLabel ? `Open ${project.liveTabLabel}` : "Open Live Dashboard"} — {project.liveDomain ?? "tashil.sw-point.com"}
-                <ExternalLink size={12} />
-              </a>
+              </ul>
+              {project.liveUrl && (
+                <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="md-btn md-btn-filled has-icon self-start" style={{ height: "auto", minHeight: 40, whiteSpace: "normal", paddingBlock: 8 }}>
+                  <Globe /> {project.liveTabLabel ? `Open ${project.liveTabLabel}` : "Open Live Dashboard"} — {project.liveDomain ?? "tashil.sw-point.com"}
+                </a>
+              )}
             </div>
           )}
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </Dialog>
   );
 }

@@ -1,23 +1,29 @@
 import { Link } from "react-router";
-import { ArrowRight, Briefcase } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { ArrowRight, Briefcase, Layers } from "lucide-react";
+import { enter } from "../md3/motion";
 
 /** Homepage stub where the client-works grid used to be; keeps the #work anchor alive. */
 export function WorksTeaser() {
+  const reduced = useReducedMotion();
   return (
-    <section id="work" aria-label="Client works" style={{ backgroundColor: "var(--md-surface)", padding: "64px 0", borderTop: "1px solid var(--md-outline-variant)" }}>
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="rounded-3xl p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[var(--md-surface-container-low)] border border-[var(--md-outline-variant)]">
-          <div>
-            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--md-primary)]"><Briefcase size={14} /> Selected Studio Works</span>
-            <h2 className="mt-2 text-2xl sm:text-3xl font-extrabold text-[var(--md-on-surface)]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Client platforms we've shipped
-            </h2>
-            <p className="mt-2 text-sm sm:text-base text-[var(--md-on-surface-variant)]">LUX-Line, Emirates Delivery Hub, UK Transport, Chapeau ERP and more — full case studies.</p>
+    <section id="work" aria-label="Studio works and services" className="bg-surface py-12 md:py-16">
+      <div className="md-container max-w-[1200px]">
+        <motion.div {...enter(reduced)} className="md-card md-card-filled p-6 md:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-2 text-title-small text-primary"><Briefcase size={18} aria-hidden="true" /> Studio works &amp; services</span>
+            <h2 className="mt-2 text-headline-medium text-on-surface">Need something custom? We build it too.</h2>
+            <p className="mt-2 text-body-large text-on-surface-variant">Beyond our own products, our studio designs and ships Flutter apps, Angular platforms and Firebase backends for clients — see the case studies (LUX-Line, Emirates Delivery Hub, UK Transport, Chapeau ERP) and what we can build for you.</p>
           </div>
-          <Link to="/works" className="shrink-0 px-6 py-3.5 rounded-xl text-sm font-semibold inline-flex items-center justify-center gap-2 bg-[var(--md-primary)] text-[var(--md-on-primary)]">
-            View our client works <ArrowRight size={16} />
-          </Link>
-        </div>
+          <div className="flex flex-wrap gap-3 shrink-0 self-start md:self-auto">
+            <Link to="/works" className="md-btn md-btn-tonal trailing-icon">
+              View client works <ArrowRight aria-hidden="true" />
+            </Link>
+            <Link to="/works#services" className="md-btn md-btn-outlined">
+              <Layers aria-hidden="true" /> Our services
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

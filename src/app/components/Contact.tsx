@@ -1,22 +1,11 @@
 import { useState } from "react";
-import { motion } from "motion/react";
-import {
-  Send,
-  Mail,
-  ArrowRight,
-  Globe,
-  Loader2,
-  AlertCircle,
-  MapPin,
-  Clock,
-  ShieldCheck,
-  FileText,
-  RefreshCw,
-  Truck,
-  Info,
-  Building,
-} from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { Send, Mail, ArrowRight, Globe, Loader2, AlertCircle, MapPin, Clock, ShieldCheck, FileText, RefreshCw, Truck, Info, Building, Lock, Check } from "lucide-react";
 import { projectId, publicAnonKey } from "../../../utils/supabase/info";
+import { useSnackbar } from "../md3/Snackbar";
+import { enter } from "../md3/motion";
+import { Logo, SectionHeader } from "../md3/Logo";
+
 
 function LinkedinIcon({ size = 16, className = "" }: Readonly<{ size?: number; className?: string }>) {
   return (
@@ -59,14 +48,6 @@ function GithubIcon({ size = 16, className = "" }: Readonly<{ size?: number; cla
   );
 }
 
-const SECTION_LABEL_STYLE: React.CSSProperties = {
-  fontFamily: "'Plus Jakarta Sans', sans-serif",
-  fontSize: "11px",
-  fontWeight: 600,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase" as const,
-  color: "var(--md-primary)",
-};
 
 const PROJECT_TYPES = [
   "Tashil SaaS Pilot",
@@ -84,6 +65,8 @@ interface ContactProps {
 }
 
 export function Contact({ onOpenLegal }: Readonly<ContactProps>) {
+  const reduced = useReducedMotion();
+  const snack = useSnackbar();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -95,7 +78,6 @@ export function Contact({ onOpenLegal }: Readonly<ContactProps>) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [focused, setFocused] = useState<string | null>(null);
 
   const handleLegalNavigation = (tab: string, hashFallback: string) => {
     if (onOpenLegal) {
@@ -132,6 +114,7 @@ export function Contact({ onOpenLegal }: Readonly<ContactProps>) {
       }
 
       setSubmitted(true);
+      snack("Message sent — we'll reply within 24 business hours.");
     } catch (err) {
       console.error("Network error sending form:", err);
       setError("Network error. Please check your connection and try again.");
@@ -140,805 +123,138 @@ export function Contact({ onOpenLegal }: Readonly<ContactProps>) {
     }
   };
 
-  const inputStyle = (field: string): React.CSSProperties => ({
-    width: "100%",
-    padding: "14px 16px",
-    borderRadius: "12px",
-    background: "var(--md-surface-container)",
-    border: `1px solid ${
-      focused === field ? "var(--md-primary)" : "var(--md-outline-variant)"
-    }`,
-    color: "var(--md-on-surface)",
-    fontFamily: "'Roboto', sans-serif",
-    fontSize: "15px",
-    fontWeight: 400,
-    lineHeight: 1.5,
-    outline: "none",
-    transition: "border-color 200ms, box-shadow 200ms",
-    boxShadow:
-      focused === field
-        ? "0 0 0 3px rgba(91,168,255,0.12)"
-        : "none",
-    resize: "none" as const,
-    boxSizing: "border-box" as const,
-  });
+  const reset = () => {
+    setSubmitted(false);
+    setForm({ name: "", email: "", phone: "", company: "", projectType: "Tashil SaaS Pilot", message: "" });
+  };
+
+  const field = (id: keyof typeof form, label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
+    <div className="md-field">
+      <input id={`contact-${id}`} value={form[id]} onChange={(e) => setForm({ ...form, [id]: e.target.value })} {...props} />
+      <label htmlFor={`contact-${id}`}>{label}</label>
+    </div>
+  );
+
+  const OFFICES = [
+    { icon: <MapPin />, title: "Egypt Office (Regional Operations)", lines: ["Commercial Market, Smouha, Alexandria, Egypt"], rtl: "السوق التجاري، سموحة، الإسكندرية", link: { href: "tel:+201211857725", label: "Tel / WhatsApp: +20 121 185 7725" } },
+    { icon: <Building />, title: "UAE Office (Commercial & Corporate)", lines: ["Dubai, United Arab Emirates"], link: { href: "https://wa.me/971558715615", label: "WhatsApp: +971 55 871 5615", ext: true } },
+    { icon: <Mail />, title: "Official Support & Billing Desk", link: { href: "mailto:support@sw-point.com", label: "support@sw-point.com" }, lines: [], after: "Response SLA: Under 24 Business Hours" },
+    { icon: <Clock />, title: "Working Hours", lines: ["Sunday – Thursday: 9:00 AM – 6:00 PM (GMT+2 / GMT+4)"] },
+  ];
+  const SOCIAL = [
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/111152120", icon: <LinkedinIcon size={18} /> },
+    { label: "GitHub", href: "https://github.com/Sw-Point", icon: <GithubIcon size={18} /> },
+    { label: "Website", href: "https://www.sw-point.com", icon: <Globe /> },
+  ];
+  const LEGAL = [
+    { tab: "privacy", hash: "privacy-policy", label: "Privacy Policy (Tashil)", icon: <ShieldCheck /> },
+    { tab: "delivery", hash: "delivery-policy", label: "Delivery & Fulfillment", icon: <Truck /> },
+    { tab: "refund", hash: "refund-policy", label: "Refund & Cancellation", icon: <RefreshCw /> },
+    { tab: "terms", hash: "terms-of-service", label: "Terms of Service", icon: <FileText /> },
+    { tab: "about", hash: "about-us", label: "About Us (Switch Point Studio)", icon: <Info /> },
+  ];
 
   return (
     <>
-      {/* ── Contact Section ── */}
-      <section
-        id="contact"
-        style={{
-          backgroundColor: "var(--md-surface)",
-          padding: "96px 0",
-        }}
-      >
-        <div className="max-w-7xl mx-auto" style={{ padding: "0 24px" }}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch" style={{ gap: "48px" }}>
-            {/* ── Left: CTA Copy ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, ease: [0.2, 0, 0, 1] }}
-              className="lg:col-span-5 flex flex-col justify-between"
-              style={{ gap: "24px" }}
-            >
-              <div className="flex flex-col" style={{ gap: "16px" }}>
-                <span style={SECTION_LABEL_STYLE}>Get In Touch</span>
-                <h2
-                  style={{
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "clamp(1.75rem, 3vw, 2.5rem)",
-                    fontWeight: 800,
-                    color: "var(--md-on-surface)",
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1.2,
-                    margin: 0,
-                  }}
-                >
-                  Ready to build something{" "}
-                  <span
-                    style={{
-                      background:
-                        "linear-gradient(90deg, var(--md-primary) 0%, var(--md-secondary) 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                      backgroundClip: "text",
-                    }}
-                  >
-                    exceptional?
-                  </span>
-                </h2>
-                <p
-                  style={{
-                    fontFamily: "'Roboto', sans-serif",
-                    fontSize: "15px",
-                    fontWeight: 400,
-                    lineHeight: 1.8,
-                    color: "var(--md-on-surface-variant)",
-                    margin: 0,
-                  }}
-                >
-                  Tell us about your project. Whether it's a Flutter app, a
-                  Firebase backend, or a complete design system — we'd love to
-                  hear what you're building.
-                </p>
-              </div>
-
-              {/* Contact methods */}
-              <div className="flex flex-col" style={{ gap: "12px" }}>
-                {/* Egypt Office */}
-                <div
-                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
-                  style={{
-                    background: "var(--md-surface-container-low)",
-                    border: "1px solid var(--md-outline-variant)",
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      background: "rgba(91, 168, 255, 0.12)",
-                      color: "var(--md-primary)",
-                    }}
-                  >
-                    <MapPin size={16} />
-                  </div>
-                  <div className="flex flex-col">
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                        color: "var(--md-primary)",
-                      }}
-                    >
-                      Egypt Office (Regional Operations)
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                        color: "var(--md-on-surface)",
-                        marginTop: "2px",
-                      }}
-                    >
-                      Commercial Market, Smouha, Alexandria, Egypt
-                    </span>
-                    <span className="text-[11px] text-[var(--md-on-surface-variant)] mt-0.5">
-                      السوق التجاري، سموحة، الإسكندرية
-                    </span>
-                    <a
-                      href="tel:+201211857725"
-                      className="text-xs mt-1 hover:underline"
-                      style={{ color: "var(--md-on-surface-variant)" }}
-                    >
-                      Tel / WhatsApp: +20 121 185 7725
-                    </a>
-                  </div>
-                </div>
-
-                {/* UAE Office */}
-                <div
-                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
-                  style={{
-                    background: "var(--md-surface-container-low)",
-                    border: "1px solid var(--md-outline-variant)",
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      background: "rgba(46, 213, 115, 0.12)",
-                      color: "#25D366",
-                    }}
-                  >
-                    <Building size={16} />
-                  </div>
-                  <div className="flex flex-col">
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                        color: "#25D366",
-                      }}
-                    >
-                      UAE Office (Commercial & Corporate)
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "14px",
-                        fontWeight: 500,
-                        color: "var(--md-on-surface)",
-                        marginTop: "2px",
-                      }}
-                    >
-                      Dubai, United Arab Emirates
-                    </span>
-                    <a
-                      href="https://wa.me/971558715615"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs mt-1 hover:underline"
-                      style={{ color: "var(--md-on-surface-variant)" }}
-                    >
-                      WhatsApp: +971 55 871 5615
-                    </a>
-                  </div>
-                </div>
-
-                {/* Support Email */}
-                <div
-                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
-                  style={{
-                    background: "var(--md-surface-container-low)",
-                    border: "1px solid var(--md-outline-variant)",
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      background: "rgba(167, 139, 250, 0.12)",
-                      color: "#a78bfa",
-                    }}
-                  >
-                    <Mail size={16} />
-                  </div>
-                  <div className="flex flex-col">
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                        color: "#a78bfa",
-                      }}
-                    >
-                      Official Support & Billing Desk
-                    </span>
-                    <a
-                      href="mailto:support@sw-point.com"
-                      className="text-sm font-medium hover:underline mt-0.5"
-                      style={{ color: "var(--md-on-surface)" }}
-                    >
-                      support@sw-point.com
-                    </a>
-                    <span className="text-xs mt-1" style={{ color: "var(--md-on-surface-variant)" }}>
-                      Response SLA: Under 24 Business Hours
-                    </span>
-                  </div>
-                </div>
-
-                {/* Hours & Availability */}
-                <div
-                  className="rounded-[14px] p-4 flex items-start gap-3 transition-all duration-200"
-                  style={{
-                    background: "var(--md-surface-container-low)",
-                    border: "1px solid var(--md-outline-variant)",
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center rounded-lg shrink-0 mt-0.5"
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      background: "rgba(251, 191, 36, 0.12)",
-                      color: "#fbbf24",
-                    }}
-                  >
-                    <Clock size={16} />
-                  </div>
-                  <div className="flex flex-col">
-                    <span
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.06em",
-                        color: "#fbbf24",
-                      }}
-                    >
-                      Working Hours
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "13px",
-                        color: "var(--md-on-surface)",
-                        marginTop: "2px",
-                      }}
-                    >
-                      Sunday – Thursday: 9:00 AM – 6:00 PM (GMT+2 / GMT+4)
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Social links */}
-              <div className="flex" style={{ gap: "12px" }}>
-                {[
-                  {
-                    icon: <LinkedinIcon size={16} />,
-                    label: "LinkedIn",
-                    href: "https://www.linkedin.com/company/111152120",
-                  },
-                  {
-                    icon: <GithubIcon size={16} />,
-                    label: "GitHub",
-                    href: "https://github.com/Sw-Point",
-                  },
-                  {
-                    icon: <Globe size={16} />,
-                    label: "Website",
-                    href: "https://www.sw-point.com",
-                  },
-                ].map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center rounded-full transition-all duration-200"
-                    style={{
-                      gap: "8px",
-                      padding: "10px 16px",
-                      background: "var(--md-surface-container-low)",
-                      border: "1px solid var(--md-outline-variant)",
-                      color: "var(--md-on-surface-variant)",
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      textDecoration: "none",
-                    }}
-                    onMouseEnter={(e) => {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.background = "rgba(91,168,255,0.08)";
-                      el.style.borderColor = "rgba(91,168,255,0.3)";
-                      el.style.color = "var(--md-primary)";
-                    }}
-                    onMouseLeave={(e) => {
-                      const el = e.currentTarget as HTMLElement;
-                      el.style.background = "var(--md-surface-container-low)";
-                      el.style.borderColor = "var(--md-outline-variant)";
-                      el.style.color = "var(--md-on-surface-variant)";
-                    }}
-                  >
-                    {social.icon}
-                    {social.label}
-                  </a>
+      <section id="contact" className="md-section bg-surface">
+        <div className="md-container">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <motion.div {...enter(reduced)} className="lg:col-span-5 flex flex-col gap-8 min-w-0">
+              <SectionHeader label="Get In Touch" title={<>Ready to build something <span className="text-primary">exceptional?</span></>}
+                body="Tell us about your project. Whether it's a Flutter app, a Firebase backend, or a complete design system — we'd love to hear what you're building." />
+              <ul className="md-card md-card-filled py-2">
+                {OFFICES.map((o) => (
+                  <li key={o.title} className="flex gap-4 px-4 py-3">
+                    <span className="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-secondary-container text-on-secondary-container [&_svg]:w-5 [&_svg]:h-5">{o.icon}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-title-small text-on-surface">{o.title}</span>
+                      {o.lines.map((l) => <span key={l} className="text-body-medium text-on-surface-variant">{l}</span>)}
+                      {o.rtl && <span className="text-body-small text-on-surface-variant" dir="rtl">{o.rtl}</span>}
+                      {o.link && (
+                        <a href={o.link.href} {...(o.link.ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                          className="text-body-medium text-primary underline-offset-4 hover:underline py-1 break-all">{o.link.label}</a>
+                      )}
+                      {o.after && <span className="text-body-small text-on-surface-variant">{o.after}</span>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex flex-wrap gap-2">
+                {SOCIAL.map((s) => (
+                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="md-btn md-btn-outlined has-icon">{s.icon}{s.label}</a>
                 ))}
               </div>
             </motion.div>
 
-            {/* ── Right: Contact Form ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.1, ease: [0.2, 0, 0, 1] }}
-              className="lg:col-span-7 flex flex-col h-full"
-            >
-              {submitted ? (
-                <div
-                  className="rounded-[24px] flex flex-col items-center justify-center text-center h-full"
-                  style={{
-                    background: "var(--md-surface-container-low)",
-                    border: "1px solid var(--md-outline-variant)",
-                    padding: "48px 32px",
-                    gap: "24px",
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center rounded-full"
-                    style={{
-                      width: "56px",
-                      height: "56px",
-                      background: "rgba(91, 168, 255, 0.12)",
-                      color: "var(--md-primary)",
-                    }}
-                  >
-                    <Send size={24} />
+            <motion.div {...enter(reduced, 0.05)} className="lg:col-span-7 min-w-0">
+              <div className="md-card md-card-outlined p-6 md:p-8">
+                {submitted ? (
+                  <div className="flex flex-col items-center text-center gap-4 py-12">
+                    <span className="w-14 h-14 rounded-full grid place-items-center bg-primary-container text-on-primary-container"><Send /></span>
+                    <h3 className="text-headline-small text-on-surface">Message Received!</h3>
+                    <p className="text-body-large text-on-surface-variant max-w-md">Thanks for reaching out. We'll be in touch within 24 hours to discuss your project.</p>
+                    <button onClick={reset} className="md-btn md-btn-outlined">Send another message</button>
                   </div>
-                  <div className="flex flex-col" style={{ gap: "8px" }}>
-                    <h3
-                      style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "1.25rem",
-                        fontWeight: 700,
-                        color: "var(--md-on-surface)",
-                        margin: 0,
-                      }}
-                    >
-                      Message Received!
-                    </h3>
-                    <p
-                      style={{
-                        fontFamily: "'Roboto', sans-serif",
-                        fontSize: "15px",
-                        color: "var(--md-on-surface-variant)",
-                        margin: 0,
-                        lineHeight: 1.7,
-                      }}
-                    >
-                      Thanks for reaching out. We'll be in touch within 24
-                      hours to discuss your project.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setSubmitted(false);
-                      setForm({
-                        name: "",
-                        email: "",
-                        phone: "",
-                        company: "",
-                        projectType: "Tashil SaaS Pilot",
-                        message: "",
-                      });
-                    }}
-                    className="rounded-full transition-all duration-200"
-                    style={{
-                      padding: "10px 24px",
-                      background: "var(--md-surface-container)",
-                      border: "1px solid var(--md-outline-variant)",
-                      color: "var(--md-on-surface)",
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontSize: "14px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Send another message
-                  </button>
-                </div>
-              ) : (
-                <form
-                  onSubmit={handleSubmit}
-                  className="flex flex-col h-full rounded-[24px] justify-between"
-                  style={{
-                    background: "var(--md-surface-container-low)",
-                    border: "1px solid var(--md-outline-variant)",
-                    padding: "36px",
-                    gap: "20px",
-                  }}
-                >
-                  <div className="flex flex-col" style={{ gap: "18px" }}>
-                    {/* Name + Email row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: "16px" }}>
-                      <div className="flex flex-col" style={{ gap: "8px" }}>
-                        <label
-                          htmlFor="contact-name"
-                          style={{
-                            fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: "var(--md-on-surface-variant)",
-                            letterSpacing: "0.04em",
-                          }}
-                        >
-                          Full Name
-                        </label>
-                        <input
-                          id="contact-name"
-                          type="text"
-                          placeholder="Your name"
-                          value={form.name}
-                          onChange={(e) =>
-                            setForm({ ...form, name: e.target.value })
-                          }
-                          onFocus={() => setFocused("name")}
-                          onBlur={() => setFocused(null)}
-                          required
-                          style={inputStyle("name")}
-                        />
-                      </div>
-                      <div className="flex flex-col" style={{ gap: "8px" }}>
-                        <label
-                          htmlFor="contact-email"
-                          style={{
-                            fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: "var(--md-on-surface-variant)",
-                            letterSpacing: "0.04em",
-                          }}
-                        >
-                          Email Address
-                        </label>
-                        <input
-                          id="contact-email"
-                          type="email"
-                          placeholder="you@company.com"
-                          value={form.email}
-                          onChange={(e) =>
-                            setForm({ ...form, email: e.target.value })
-                          }
-                          onFocus={() => setFocused("email")}
-                          onBlur={() => setFocused(null)}
-                          required
-                          style={inputStyle("email")}
-                        />
-                      </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+                      {field("name", "Full Name", { type: "text", placeholder: "Your name", required: true, autoComplete: "name" })}
+                      {field("email", "Email Address", { type: "email", placeholder: "you@company.com", required: true, autoComplete: "email" })}
+                      {field("phone", "Phone / WhatsApp (Recommended)", { type: "tel", placeholder: "+20 1xx xxx xxxx", autoComplete: "tel" })}
+                      {field("company", "Company / Fleet Size", { type: "text", placeholder: "e.g. Acme FMCG (30 Delegates)", autoComplete: "organization" })}
                     </div>
-
-                    {/* Phone + Company row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: "16px" }}>
-                      <div className="flex flex-col" style={{ gap: "8px" }}>
-                        <label
-                          htmlFor="contact-phone"
-                          style={{
-                            fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: "var(--md-on-surface-variant)",
-                            letterSpacing: "0.04em",
-                          }}
-                        >
-                          Phone / WhatsApp (Recommended)
-                        </label>
-                        <input
-                          id="contact-phone"
-                          type="tel"
-                          placeholder="+20 1xx xxx xxxx"
-                          value={form.phone}
-                          onChange={(e) =>
-                            setForm({ ...form, phone: e.target.value })
-                          }
-                          onFocus={() => setFocused("phone")}
-                          onBlur={() => setFocused(null)}
-                          style={inputStyle("phone")}
-                        />
-                      </div>
-                      <div className="flex flex-col" style={{ gap: "8px" }}>
-                        <label
-                          htmlFor="contact-company"
-                          style={{
-                            fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: "var(--md-on-surface-variant)",
-                            letterSpacing: "0.04em",
-                          }}
-                        >
-                          Company / Fleet Size
-                        </label>
-                        <input
-                          id="contact-company"
-                          type="text"
-                          placeholder="e.g. Acme FMCG (30 Delegates)"
-                          value={form.company}
-                          onChange={(e) =>
-                            setForm({ ...form, company: e.target.value })
-                          }
-                          onFocus={() => setFocused("company")}
-                          onBlur={() => setFocused(null)}
-                          style={inputStyle("company")}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Project type selector */}
-                    <div className="flex flex-col" style={{ gap: "8px" }}>
-                      <span
-                        style={{
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "var(--md-on-surface-variant)",
-                          letterSpacing: "0.04em",
-                        }}
-                      >
-                        Project Type / Desired Solution
-                      </span>
-                      <div className="flex flex-wrap" style={{ gap: "8px" }}>
+                    <fieldset className="flex flex-col gap-3">
+                      <legend className="text-title-small text-on-surface-variant mb-3">Project Type / Desired Solution</legend>
+                      <div className="flex flex-wrap gap-2">
                         {PROJECT_TYPES.map((type) => {
-                          const isSelected = form.projectType === type;
+                          const sel = form.projectType === type;
                           return (
-                            <button
-                              key={type}
-                              type="button"
-                              onClick={() =>
-                                setForm({ ...form, projectType: type })
-                              }
-                              className="rounded-full transition-all duration-200"
-                              style={{
-                                padding: "7px 14px",
-                                background: isSelected
-                                  ? "var(--md-primary)"
-                                  : "var(--md-surface-container)",
-                                border: `1px solid ${
-                                  isSelected
-                                    ? "transparent"
-                                    : "var(--md-outline-variant)"
-                                }`,
-                                color: isSelected
-                                  ? "var(--md-on-primary)"
-                                  : "var(--md-on-surface-variant)",
-                                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                                fontSize: "12px",
-                                fontWeight: 500,
-                                cursor: "pointer",
-                                boxShadow: isSelected
-                                  ? "0 2px 8px rgba(91,168,255,0.25)"
-                                  : "none",
-                              }}
-                            >
-                              {type}
+                            <button key={type} type="button" aria-pressed={sel} onClick={() => setForm({ ...form, projectType: type })} className="md-chip">
+                              {sel && <Check />}{type}
                             </button>
                           );
                         })}
                       </div>
+                    </fieldset>
+                    <div className="md-field">
+                      <textarea id="contact-message" rows={5} required placeholder="Describe what you're building, your timeline, or any specific fleet requirements..."
+                        value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+                      <label htmlFor="contact-message">Tell us about your project or requirements</label>
                     </div>
-
-                    {/* Message */}
-                    <div className="flex flex-col flex-1" style={{ gap: "8px" }}>
-                      <label
-                        htmlFor="contact-message"
-                        style={{
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "var(--md-on-surface-variant)",
-                          letterSpacing: "0.04em",
-                        }}
-                      >
-                        Tell us about your project or requirements
-                      </label>
-                      <textarea
-                        id="contact-message"
-                        placeholder="Describe what you're building, your timeline, or any specific fleet requirements..."
-                        value={form.message}
-                        onChange={(e) =>
-                          setForm({ ...form, message: e.target.value })
-                        }
-                        onFocus={() => setFocused("message")}
-                        onBlur={() => setFocused(null)}
-                        rows={4}
-                        required
-                        style={inputStyle("message")}
-                      />
+                    {error && (
+                      <div role="alert" className="flex items-start gap-2 rounded-[12px] p-3 bg-error-container text-on-error-container text-body-medium"><AlertCircle size={20} className="shrink-0" />{error}</div>
+                    )}
+                    <div className="flex flex-col gap-2">
+                      <button type="submit" disabled={loading} className="md-btn md-btn-filled trailing-icon w-full md:w-auto md:self-end">
+                        {loading ? <Loader2 className="animate-spin" /> : <>Send Message <ArrowRight /></>}
+                      </button>
+                      <p className="text-body-small text-on-surface-variant flex flex-wrap items-center gap-x-2 md:justify-end">
+                        <Lock size={14} /> 256-Bit SSL Encrypted <span aria-hidden="true">•</span> Response Under 24 Business Hours
+                      </p>
                     </div>
-                  </div>
-
-                  {/* Submit + Reassurance footer */}
-                  <div className="flex flex-col" style={{ gap: "10px", marginTop: "12px" }}>
-                    <button
-                      type="submit"
-                      className="w-full flex items-center justify-center rounded-full transition-all duration-300"
-                      style={{
-                        padding: "16px 32px",
-                        background: "var(--md-primary)",
-                        color: "var(--md-on-primary)",
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "15px",
-                        fontWeight: 700,
-                        border: "none",
-                        cursor: "pointer",
-                        gap: "8px",
-                      }}
-                      onMouseEnter={(e) => {
-                        const el = e.currentTarget as HTMLElement;
-                        el.style.transform = "translateY(-1px)";
-                        el.style.boxShadow = "0 8px 32px rgba(91,168,255,0.4)";
-                      }}
-                      onMouseLeave={(e) => {
-                        const el = e.currentTarget as HTMLElement;
-                        el.style.transform = "translateY(0)";
-                        el.style.boxShadow = "none";
-                      }}
-                    >
-                      {loading ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        <>
-                          Send Message
-                          <ArrowRight size={16} />
-                        </>
-                      )}
-                    </button>
-                    <div className="text-[11px] text-[var(--md-on-surface-variant)] text-center flex items-center justify-center gap-2">
-                      <span>🔒 256-Bit SSL Encrypted</span>
-                      <span>•</span>
-                      <span>Response Under 24 Business Hours</span>
-                    </div>
-                  </div>
-
-                  {error && (
-                    <div
-                      className="flex items-center rounded-[12px] transition-all duration-200"
-                      style={{
-                        padding: "14px 16px",
-                        background: "rgba(255,0,0,0.08)",
-                        border: "1px solid rgba(255,0,0,0.3)",
-                        color: "var(--md-on-surface-variant)",
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: "13px",
-                        fontWeight: 500,
-                        gap: "8px",
-                      }}
-                    >
-                      <AlertCircle size={16} />
-                      {error}
-                    </div>
-                  )}
-                </form>
-              )}
+                  </form>
+                )}
+              </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer
-        id="about"
-        role="contentinfo"
-        aria-label="Switch Point footer and legal center"
-        style={{
-          backgroundColor: "var(--md-surface-container-lowest)",
-          borderTop: "1px solid var(--md-outline-variant)",
-          padding: "56px 0 36px 0",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-10 border-b border-[var(--md-outline-variant)]">
-            {/* Col 1: Brand & Registration */}
-            <div className="md:col-span-4 flex flex-col gap-4">
-              <a
-                href="https://sw-point.com"
-                className="flex items-center gap-2.5 text-decoration-none"
-              >
-                <div
-                  className="flex items-center justify-center rounded-[10px]"
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    background: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary) 100%)",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontSize: "11px",
-                      fontWeight: 800,
-                      color: "#fff",
-                      letterSpacing: "-0.03em",
-                    }}
-                  >
-                    SP
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span
-                    style={{
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontSize: "16px",
-                      fontWeight: 700,
-                      color: "var(--md-on-surface)",
-                      letterSpacing: "-0.025em",
-                    }}
-                  >
-                    Switch Point
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Roboto', sans-serif",
-                      fontSize: "11px",
-                      color: "var(--md-on-surface-variant)",
-                    }}
-                  >
-                    Digital Product Studio & Enterprise SaaS
-                  </span>
-                </div>
-              </a>
-              <p
-                style={{
-                  fontFamily: "'Roboto', sans-serif",
-                  fontSize: "13px",
-                  lineHeight: 1.7,
-                  color: "var(--md-on-surface-variant)",
-                  margin: 0,
-                }}
-              >
-                Engineering high-concurrency cross-platform applications, biometric field attendance systems (Tashil), and modern digital experiences across Egypt and the UAE.
-              </p>
-              <div className="text-xs text-[var(--md-on-surface-variant)] flex flex-col gap-1">
-                <span>📍 <strong>Egypt Office:</strong> Commercial Market, Smouha, Alexandria, Egypt</span>
-                <span>🏢 <strong>UAE Office:</strong> Dubai, United Arab Emirates</span>
-                <span>✉️ <strong>Support:</strong> support@sw-point.com</span>
+      <footer id="about" role="contentinfo" aria-label="Switch Point footer and legal center" className="bg-surface-container pt-12 pb-24 md:pb-8">
+        <div className="md-container">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-10">
+            <div className="lg:col-span-4 flex flex-col gap-4">
+              <a href="https://sw-point.com" className="self-start"><Logo sub="Digital Product Studio & Enterprise SaaS" /></a>
+              <p className="text-body-medium text-on-surface-variant">Engineering high-concurrency cross-platform applications, biometric field attendance systems (Tashil), and modern digital experiences across Egypt and the UAE.</p>
+              <div className="text-body-small text-on-surface-variant flex flex-col gap-1">
+                <span><strong className="text-on-surface">Egypt Office:</strong> Commercial Market, Smouha, Alexandria, Egypt</span>
+                <span><strong className="text-on-surface">UAE Office:</strong> Dubai, United Arab Emirates</span>
+                <span><strong className="text-on-surface">Support:</strong> support@sw-point.com</span>
               </div>
             </div>
-
-            {/* Col 2: Navigation Links */}
-            <div className="md:col-span-3 flex flex-col gap-3">
-              <span
-                style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "12px",
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  color: "var(--md-on-surface)",
-                }}
-              >
-                Platform & Solutions
-              </span>
-              <nav aria-label="Footer platform links" className="flex flex-col gap-2">
+            <div className="lg:col-span-3 flex flex-col gap-2">
+              <h3 className="text-title-small text-on-surface">Platform & Solutions</h3>
+              <nav aria-label="Footer platform links" className="flex flex-col -ml-3">
                 {[
                   { label: "Studio Works", href: "/works" },
                   { label: "Studio Services", href: "/works#services" },
@@ -946,98 +262,26 @@ export function Contact({ onOpenLegal }: Readonly<ContactProps>) {
                   { label: "Subscriptions", href: "#subscriptions" },
                   { label: "Contact Us", href: "#contact" },
                 ].map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    className="text-xs text-[var(--md-on-surface-variant)] hover:text-[var(--md-primary)] transition-colors duration-150"
-                  >
-                    {item.label}
-                  </a>
+                  <a key={item.label} href={item.href} className="md-btn md-btn-text self-start" style={{ color: "var(--md-sys-color-on-surface-variant)" }}>{item.label}</a>
                 ))}
               </nav>
             </div>
-
-            {/* Col 3: Legal & Regulatory Policies */}
-            <div className="md:col-span-5 flex flex-col gap-3">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="text-[var(--md-primary)]" />
-                <span
-                  style={{
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "12px",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    color: "var(--md-on-surface)",
-                  }}
-                >
-                  Legal & Compliance Policies
-                </span>
-              </div>
-              <p className="text-xs text-[var(--md-on-surface-variant)] mb-1">
-                Fully transparent commercial and operational terms for merchant account and payment approval:
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleLegalNavigation("privacy", "privacy-policy")}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
-                >
-                  <ShieldCheck size={14} className="text-cyan-400 shrink-0" />
-                  <span>Privacy Policy (Tashil)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLegalNavigation("delivery", "delivery-policy")}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
-                >
-                  <Truck size={14} className="text-blue-400 shrink-0" />
-                  <span>Delivery & Fulfillment</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLegalNavigation("refund", "refund-policy")}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
-                >
-                  <RefreshCw size={14} className="text-emerald-400 shrink-0" />
-                  <span>Refund & Cancellation</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLegalNavigation("terms", "terms-of-service")}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150"
-                >
-                  <FileText size={14} className="text-amber-400 shrink-0" />
-                  <span>Terms of Service</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLegalNavigation("about", "about-us")}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[var(--md-on-surface)] bg-[var(--md-surface-container)] hover:bg-[var(--md-surface-container-high)] border border-[var(--md-outline-variant)] text-left transition-colors duration-150 sm:col-span-2"
-                >
-                  <Info size={14} className="text-purple-400 shrink-0" />
-                  <span>About Us (Switch Point Studio)</span>
-                </button>
+            <div className="lg:col-span-5 flex flex-col gap-3">
+              <h3 className="flex items-center gap-2 text-title-small text-on-surface"><ShieldCheck size={18} className="text-primary" /> Legal & Compliance Policies</h3>
+              <p className="text-body-small text-on-surface-variant">Fully transparent commercial and operational terms for merchant account and payment approval:</p>
+              <div className="flex flex-wrap gap-2">
+                {LEGAL.map((l) => (
+                  <button key={l.tab} onClick={() => handleLegalNavigation(l.tab, l.hash)} className="md-chip">{l.icon}{l.label}</button>
+                ))}
               </div>
             </div>
           </div>
-
-          {/* Bottom Copyright & Security */}
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--md-on-surface-variant)]">
-            <p className="margin-0 text-center sm:text-left">
-              &copy; 2026 Switch Point. All rights reserved. Commercial registration in Alexandria, Egypt & Dubai, UAE.
-            </p>
+          <hr className="md-divider" />
+          <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-body-small text-on-surface-variant">
+            <p className="text-center md:text-left">&copy; 2026 Switch Point. All rights reserved. Commercial registration in Alexandria, Egypt & Dubai, UAE.</p>
             <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1.5 text-emerald-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>256-Bit SSL Encrypted</span>
-              </span>
-              <a
-                href="mailto:support@sw-point.com"
-                className="text-[var(--md-primary)] hover:underline"
-              >
-                support@sw-point.com
-              </a>
+              <span className="flex items-center gap-1.5"><Lock size={14} /> 256-Bit SSL Encrypted</span>
+              <a href="mailto:support@sw-point.com" className="text-primary hover:underline py-3">support@sw-point.com</a>
             </div>
           </div>
         </div>

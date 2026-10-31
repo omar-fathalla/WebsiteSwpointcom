@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useCart } from "../../context/CartContext";
+import { Dialog } from "../../md3/Dialog";
 
-const jakarta = { fontFamily: "'Plus Jakarta Sans', sans-serif" };
 
 /**
  * Shows the result when Paymob redirects back with ?payment=success|failed.
@@ -21,7 +21,6 @@ export function PaymentResult() {
     }
   }, [clear]);
 
-  if (!status) return null;
   const ok = status === "success";
   const close = () => {
     const url = new URL(window.location.href);
@@ -31,19 +30,19 @@ export function PaymentResult() {
   };
 
   return (
-    <div className="fixed inset-0 z-[110] bg-black/70 backdrop-blur-sm grid place-items-center p-4">
-      <div role="alertdialog" className="w-full max-w-md rounded-3xl p-8 text-center bg-[var(--md-surface-container-low)] border border-[var(--md-outline-variant)] shadow-2xl">
-        {ok ? <CheckCircle2 size={56} className="mx-auto text-emerald-400" /> : <XCircle size={56} className="mx-auto text-red-400" />}
-        <h2 className="mt-4 text-2xl font-extrabold text-[var(--md-on-surface)]" style={jakarta}>{ok ? "Payment successful" : "Payment failed"}</h2>
-        <p className="mt-1 text-[var(--md-on-surface-variant)]" dir="rtl">{ok ? "تم الدفع بنجاح" : "لم تتم عملية الدفع"}</p>
-        <p className="mt-3 text-sm text-[var(--md-on-surface-variant)]">
+    <Dialog open={!!status} onClose={close} label={ok ? "Payment successful" : "Payment failed"} z={110}>
+      <div role="alertdialog" aria-live="assertive" className="p-6 md:p-6 flex flex-col items-center text-center my-auto">
+        {ok ? <CheckCircle2 size={24} className="text-primary" /> : <XCircle size={24} className="text-error" />}
+        <h2 className="mt-4 text-headline-small text-on-surface">{ok ? "Payment successful" : "Payment failed"}</h2>
+        <p className="mt-1 text-body-large text-on-surface-variant" dir="rtl">{ok ? "تم الدفع بنجاح" : "لم تتم عملية الدفع"}</p>
+        <p className="mt-4 text-body-medium text-on-surface-variant">
           {ok ? "Thank you! Our team will contact you within one business day to activate your subscription." : "No money was taken. You can try again or contact us for help."}
         </p>
-        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-          {!ok && <button onClick={() => { close(); setCheckoutOpen(true); }} className="px-5 py-3 rounded-xl text-sm font-semibold bg-[var(--md-primary)] text-[var(--md-on-primary)]">Try again</button>}
-          <button onClick={close} className="px-5 py-3 rounded-xl text-sm font-semibold bg-[var(--md-surface-container-high)] text-[var(--md-on-surface)] border border-[var(--md-outline-variant)]">Back to site</button>
+        <div className="mt-6 self-stretch flex justify-end gap-2">
+          <button onClick={close} className="md-btn md-btn-text">Back to site</button>
+          {!ok && <button onClick={() => { close(); setCheckoutOpen(true); }} className="md-btn md-btn-filled">Try again</button>}
         </div>
       </div>
-    </div>
+    </Dialog>
   );
 }

@@ -1,28 +1,36 @@
 import { CartButton } from "./cart/CartDrawer";
 import { useLocation, useNavigate } from "react-router";
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { Menu, X, Moon, Sun, Package, Briefcase, Repeat, Info, ShieldCheck, Mail, Send } from "lucide-react";
+import { Logo } from "../md3/Logo";
+import { Scrim, useModal } from "../md3/Dialog";
+import { tEnter, tExit } from "../md3/motion";
+import { useTheme } from "../md3/theme";
 
 interface NavigationProps {
   readonly onOpenLegal?: (tab: string) => void;
 }
 
-const NAV_LINKS: { label: string; href: string; legalTab?: string }[] = [
-  { label: "Products", href: "#products" },
-  { label: "Studio", href: "/works" },
-  { label: "Subscriptions", href: "#subscriptions" },
-  { label: "About Us", href: "#about-us", legalTab: "about" },
-  { label: "Policies", href: "#privacy-policy", legalTab: "privacy" },
-  { label: "Contact", href: "#contact" },
+const NAV_LINKS: { label: string; href: string; legalTab?: string; icon: typeof Package }[] = [
+  { label: "Products", href: "#products", icon: Package },
+  { label: "Studio", href: "/works", icon: Briefcase },
+  { label: "Subscriptions", href: "#subscriptions", icon: Repeat },
+  { label: "About Us", href: "#about-us", legalTab: "about", icon: Info },
+  { label: "Policies", href: "#privacy-policy", legalTab: "privacy", icon: ShieldCheck },
+  { label: "Contact", href: "#contact", icon: Mail },
 ];
 
 export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { mode, toggle } = useTheme();
+  const reduced = useReducedMotion();
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  const drawerRef = useModal(drawerOpen, closeDrawer);
+  const onWorks = location.pathname.replace(/\/$/, "") === "/works";
 
   /** "/works" → route; "#x" → scroll on home, or go to "/#x" from other pages. */
   const goTo = (href: string) => {
@@ -39,243 +47,113 @@ export function Navigation({ onOpenLegal }: Readonly<NavigationProps>) {
   };
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 24);
+    const handleScroll = () => setScrolled(window.scrollY > 4);
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleNavClick = (link: { label: string; href: string; legalTab?: string }) => {
-    setMobileOpen(false);
+  const handleNavClick = (link: { href: string; legalTab?: string }, fromDrawer = false) => {
+    setDrawerOpen(false);
     if (link.legalTab && onOpenLegal) {
       onOpenLegal(link.legalTab);
       return;
     }
-    goTo(link.href);
+    if (fromDrawer) setTimeout(() => goTo(link.href), 220);
+    else goTo(link.href);
   };
+
+  const isActive = (href: string) => (href === "/works" ? onWorks : false);
+  const ThemeIcon = mode === "dark" ? Sun : Moon;
 
   return (
     <header>
-      <nav
-        aria-label="Main navigation"
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      {/* ── Small top app bar: 64px, surface → surface-container when scrolled under ── */}
+      <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50"
         style={{
-          backgroundColor: scrolled ? "rgba(13, 17, 23, 0.88)" : "transparent",
-          backdropFilter: scrolled ? "blur(24px) saturate(1.6)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(24px) saturate(1.6)" : "none",
-          borderBottom: scrolled
-            ? "1px solid rgba(189, 195, 206, 0.1)"
-            : "1px solid transparent",
-        }}
-      >
-        <div
-          className="max-w-7xl mx-auto flex items-center justify-between gap-8"
-          style={{ height: "64px", padding: "0 24px" }}
-        >
-          {/* ── Logo ── */}
-          <a
-            href="/"
-            aria-label="Switch Point — Back to top"
-            className="flex items-center shrink-0"
-            style={{ gap: "10px" }}
+          height: 64,
+          background: scrolled ? "var(--md-sys-color-surface-container)" : "var(--md-sys-color-surface)",
+          transition: "background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard)",
+        }}>
+        <div className="md-container h-full flex items-center gap-1">
+          <button className="md-icon-btn xl:hidden -ml-2 mr-1" onClick={() => setDrawerOpen(true)} aria-label="Open navigation menu" aria-expanded={drawerOpen}>
+            <Menu />
+          </button>
+          <a href="/" aria-label="Switch Point — Back to top" className="flex items-center shrink min-w-0 rounded-[12px]"
             onClick={(e) => {
               e.preventDefault();
               if (location.pathname !== "/") navigate("/");
               window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          >
-            <div
-              className="flex items-center justify-center rounded-[10px]"
-              style={{
-                width: "32px",
-                height: "32px",
-                background: "linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary) 100%)",
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "11px",
-                  fontWeight: 800,
-                  color: "#fff",
-                  letterSpacing: "-0.03em",
-                }}
-              >
-                SP
-              </span>
-            </div>
-            <span
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "16px",
-                fontWeight: 700,
-                color: "var(--md-on-surface)",
-                letterSpacing: "-0.025em",
-              }}
-            >
-              Switch Point
-            </span>
+            }}>
+            <Logo />
           </a>
 
-          {/* ── Desktop Nav Links ── */}
-          <div className="hidden md:flex items-center" style={{ gap: "2px" }}>
+          <div className="hidden xl:flex items-center gap-1 mx-auto">
             {NAV_LINKS.map((link) => (
-              <button
-                key={link.label}
-                onClick={() => handleNavClick(link)}
-                onMouseEnter={() => setActiveLink(link.label)}
-                onMouseLeave={() => setActiveLink(null)}
-                className="relative rounded-full transition-colors duration-200"
-                style={{
-                  padding: "8px 16px",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  color:
-                    activeLink === link.label
-                      ? "var(--md-primary)"
-                      : "var(--md-on-surface-variant)",
-                  background:
-                    activeLink === link.label
-                      ? "rgba(91, 168, 255, 0.08)"
-                      : "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
+              <button key={link.label} onClick={() => handleNavClick(link)} aria-current={isActive(link.href) ? "page" : undefined}
+                className="md-btn md-btn-text"
+                style={isActive(link.href) ? { background: "var(--md-sys-color-secondary-container)", color: "var(--md-sys-color-on-secondary-container)" } : { color: "var(--md-sys-color-on-surface-variant)" }}>
                 {link.label}
               </button>
             ))}
           </div>
 
-          {/* ── CTA ── */}
-          <div className="hidden md:flex items-center" style={{ gap: "12px" }}>
+          <div className="flex items-center gap-1 ml-auto xl:ml-0">
+            <button className="md-icon-btn" onClick={toggle} aria-label={`Switch to ${mode === "dark" ? "light" : "dark"} theme`} title="Toggle theme">
+              <ThemeIcon />
+            </button>
             <CartButton />
-            <button
-              onClick={() => handleNavClick({ label: "Contact", href: "#contact" })}
-              className="rounded-full transition-all duration-200"
-              style={{
-                padding: "10px 20px",
-                background: "var(--md-primary)",
-                color: "var(--md-on-primary)",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: "14px",
-                fontWeight: 600,
-                border: "none",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 4px 20px rgba(91, 168, 255, 0.35)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "none";
-              }}
-            >
+            <button onClick={() => handleNavClick({ href: "#contact" })} className="md-btn md-btn-filled hidden xl:inline-flex ml-2">
               Start a Project
             </button>
           </div>
-
-          <CartButton className="md:hidden ml-auto mr-1" />
-          {/* ── Mobile hamburger ── */}
-          <button
-            className="md:hidden rounded-xl transition-colors duration-200"
-            style={{
-              padding: "8px",
-              color: "var(--md-on-surface)",
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-            }}
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
         </div>
+      </nav>
 
-        {/* ── Mobile Drawer ── */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-              className="md:hidden overflow-hidden"
-              style={{
-                backgroundColor: "rgba(13, 17, 23, 0.97)",
-                borderTop: "1px solid rgba(189, 195, 206, 0.08)",
-              }}
-            >
-              <div className="flex flex-col" style={{ padding: "16px 24px 24px" }}>
-                {NAV_LINKS.map((link) => (
-                  <button
-                    key={link.label}
-                    onClick={() => {
-                      setMobileOpen(false);
-                      if (link.legalTab && onOpenLegal) {
-                        onOpenLegal(link.legalTab);
-                        return;
-                      }
-                      setTimeout(() => goTo(link.href), 320);
-                    }}
-                    className="rounded-xl text-left transition-colors duration-200"
-                    style={{
-                      padding: "14px 16px",
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontSize: "16px",
-                      fontWeight: 500,
-                      color: "var(--md-on-surface)",
-                      background: "transparent",
-                      border: "none",
-                      cursor: "pointer",
-                      WebkitTapHighlightColor: "transparent",
-                      touchAction: "manipulation",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.background =
-                        "rgba(91, 168, 255, 0.08)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = "transparent";
-                    }}
-                  >
-                    {link.label}
-                  </button>
-                ))}
-                <button
-                  onClick={() => {
-                    setMobileOpen(false);
-                    setTimeout(() => {
-                      const el = document.querySelector("#contact");
-                      if (el) el.scrollIntoView({ behavior: "smooth" });
-                    }, 320);
-                  }}
-                  className="rounded-full mt-4 transition-all duration-200"
-                  style={{
-                    padding: "14px 24px",
-                    background: "var(--md-primary)",
-                    color: "var(--md-on-primary)",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    border: "none",
-                    cursor: "pointer",
-                    textAlign: "center",
-                    WebkitTapHighlightColor: "transparent",
-                    touchAction: "manipulation",
-                  }}
-                >
-                  Start a Project
+      {/* ── Compact/medium: modal navigation drawer ── */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <>
+            <Scrim onClick={closeDrawer} z={80} />
+            <motion.aside ref={drawerRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Navigation"
+              className="fixed top-0 left-0 bottom-0 z-[81] w-[calc(100%-56px)] max-w-[360px] flex flex-col outline-none overflow-y-auto"
+              style={{ background: "var(--md-sys-color-surface-container-low)", borderRadius: "0 16px 16px 0" }}
+              initial={reduced ? { opacity: 0 } : { x: "-100%" }} animate={{ x: 0, opacity: 1, transition: tEnter }} exit={reduced ? { opacity: 0, transition: tExit } : { x: "-100%", transition: tExit }}>
+              <div className="flex items-center justify-between pl-7 pr-3 h-16">
+                <span className="text-title-small text-on-surface-variant">Switch Point</span>
+                <button className="md-icon-btn" onClick={closeDrawer} aria-label="Close navigation menu"><X /></button>
+              </div>
+              <div className="flex flex-col px-3 pb-3">
+                {NAV_LINKS.map((link) => {
+                  const Icon = link.icon;
+                  const active = isActive(link.href);
+                  return (
+                    <button key={link.label} onClick={() => handleNavClick(link, true)} aria-current={active ? "page" : undefined}
+                      className="state flex items-center gap-3 h-14 pl-4 pr-6 rounded-full text-label-large text-left"
+                      style={active ? { background: "var(--md-sys-color-secondary-container)", color: "var(--md-sys-color-on-secondary-container)" } : { color: "var(--md-sys-color-on-surface-variant)" }}>
+                      <Icon size={24} /> {link.label}
+                    </button>
+                  );
+                })}
+                <hr className="md-divider my-2 mx-4" />
+                <button onClick={toggle} className="state flex items-center gap-3 h-14 pl-4 pr-6 rounded-full text-label-large text-left text-on-surface-variant">
+                  <ThemeIcon size={24} /> {mode === "dark" ? "Light theme" : "Dark theme"}
                 </button>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── Compact only: extended FAB for the main CTA ── */}
+      <AnimatePresence>
+        {scrolled && !drawerOpen && (
+          <motion.button initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1, transition: tEnter }} exit={{ opacity: 0, scale: 0.8, transition: tExit }}
+            onClick={() => handleNavClick({ href: "#contact" })} className="md-fab md:hidden fixed right-4 bottom-4 z-40" aria-label="Start a project">
+            <Send /> Start a project
+          </motion.button>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

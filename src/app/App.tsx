@@ -1,17 +1,20 @@
 import { Navigation } from "./components/Navigation";
 import { Hero } from "./components/Hero";
 import { WorksTeaser } from "./components/WorksTeaser";
-import { WorksPage } from "./pages/WorksPage";
 import { Routes, Route, useLocation } from "react-router";
 import { CompanyProducts } from "./components/CompanyProducts";
 import { SubscriptionServices } from "./components/SubscriptionServices";
 import { CartProvider } from "./context/CartContext";
+import { SnackbarProvider } from "./md3/Snackbar";
 import { CartDrawer } from "./components/cart/CartDrawer";
 import { CheckoutModal } from "./components/cart/CheckoutModal";
 import { PaymentResult } from "./components/cart/PaymentResult";
 import { Contact } from "./components/Contact";
-import { LegalModal } from "./components/legal/LegalModal";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, lazy, Suspense } from "react";
+
+// Code-split: /works and the legal dialog are not needed for first paint of the homepage.
+const WorksPage = lazy(() => import("./pages/WorksPage").then((m) => ({ default: m.WorksPage })));
+const LegalModal = lazy(() => import("./components/legal/LegalModal").then((m) => ({ default: m.LegalModal })));
  
 // ─── SEO Constants ───────────────────────────────────────────────────────────
 const SITE_CONFIG = {
@@ -19,10 +22,10 @@ const SITE_CONFIG = {
   name: "Switch Point",
   title: "Switch Point — Digital Product Studio | UI/UX Design & App Development",
   description:
-    "Switch Point is a digital product studio specializing in UI/UX design, Flutter mobile apps, Angular web platforms, and Firebase backends. Based in Egypt & UAE. We craft high-performance digital products from concept to deployment.",
+    "Switch Point is a digital product studio in Egypt & UAE. We run Tashil, Tashil Gift and Tashil Data Sharing as monthly SaaS subscriptions (billed in EGP via Paymob), and design and build Flutter apps, Angular platforms and Firebase backends for clients.",
   ogImage: "https://www.sw-point.com/og-image.png",
   keywords:
-    "Switch Point, UI/UX design, Flutter app development, Angular web development, Firebase backend, Material Design 3, digital product studio, Egypt, UAE, mobile app, SaaS, technical project management, product design, design system",
+    "Switch Point, Tashil, Tashil Gift, Tashil Data Sharing, SaaS subscriptions Egypt, field workforce attendance app, UI/UX design, Flutter app development, Angular web development, Firebase backend, Material Design 3, digital product studio, Egypt, UAE, mobile app, SaaS, technical project management, product design, design system",
   author: "Switch Point",
   phones: {
     egypt: "+20-121-185-7725",
@@ -232,69 +235,46 @@ const serviceSchema = {
 const portfolioSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  name: "Switch Point Portfolio — Case Studies",
-  description: "Featured digital products built by Switch Point studio",
-  numberOfItems: 4,
+  name: "Switch Point — Products & Client Works",
+  description: "In-house SaaS products offered as monthly subscriptions, plus selected client platforms built by Switch Point studio",
+  numberOfItems: 6,
   itemListElement: [
-    {
+    ...[
+      { name: "Tashil", desc: "Field workforce & attendance platform for retail chains and their suppliers: geofenced, device-bound check-ins, live supervision and automated payroll. Flutter app + Angular web command center.", price: "83.33", unit: "per employee / month" },
+      { name: "Tashil Gift", desc: "AI receipt-to-reward campaigns for FMCG brands inside retail chains: AI receipt validation, in-store games, live stock and sell-through reports.", price: "1000", unit: "per branch / month" },
+      { name: "Tashil Data Sharing", desc: "Sell-in / sell-out intelligence portal for manufacturers and retail chains, offered as a flat monthly company plan.", price: "5000", unit: "flat / month" },
+    ].map((p, i) => ({
       "@type": "ListItem",
-      position: 1,
+      position: i + 1,
       item: {
-        "@type": "CreativeWork",
-        name: "Tashil Enterprise Platform — Flagship Field Operations Ecosystem",
-        description:
-          "Enterprise B2B field operations ecosystem featuring a Flutter mobile app and Angular web command center. Covers 9 specialized organizational roles, anti-fraud geofencing, GPS live radar, watermarked photo permits, automated violation audit, offline-first 0ms architecture, and real-time Firebase sync.",
-        url: `${SITE_CONFIG.url}/#work`,
-        creator: { "@type": "Organization", name: SITE_CONFIG.name },
-        keywords:
-          "Tashil, Flagship Product, Flutter, Angular Web, Clean Architecture, BLoC, Firebase, Anti-Fraud Geofencing, GPS Radar, QR Code, Offline-First, Multi-Tenant Enterprise",
+        "@type": "SoftwareApplication",
+        name: p.name,
+        description: p.desc,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web, Android, iOS",
+        url: `${SITE_CONFIG.url}/#products`,
+        publisher: { "@type": "Organization", name: SITE_CONFIG.name },
+        offers: {
+          "@type": "Offer",
+          price: p.price,
+          priceCurrency: "EGP",
+          description: `Monthly subscription, ${p.unit}`,
+          url: `${SITE_CONFIG.url}/#subscriptions`,
+        },
       },
-    },
-    {
+    })),
+    ...[
+      { name: "Emirates Delivery Hub — UAE Last-Mile Logistics Platform", desc: "Angular 16 web dispatcher dashboard + Flutter courier app for UAE last-mile logistics with real-time GPS tracking, auto-assignment, POD and a Firebase backend." },
+      { name: "UK Transport & Removals — Conversion-Focused Web Platform", desc: "Next.js / React web platform for a UK transport and removals company with SSG/ISR pages, a real-time quote engine and a Firebase backend." },
+      { name: "Chapeau ERP — Field Sales Representative System", desc: "Flutter mobile ERP for field sales reps with customer management, order capture, inventory visibility, GPS visit tracking and offline-first sync." },
+    ].map((w, i) => ({
       "@type": "ListItem",
-      position: 2,
-      item: {
-        "@type": "CreativeWork",
-        name: "Emirates Delivery Hub — UAE Last-Mile Logistics Platform",
-        description:
-          "Angular 16 web dispatcher dashboard + Flutter courier app for UAE last-mile logistics. Features real-time GPS tracking with Google Maps SDK, auto-assignment engine, POD system, Arabic/English localisation, and Firebase Firestore backend.",
-        url: `${SITE_CONFIG.url}/#emirates-delivery`,
-        creator: { "@type": "Organization", name: SITE_CONFIG.name },
-        keywords:
-          "Angular 16, Flutter, Firebase, Firestore, Logistics, UAE, Delivery Management, Google Maps, Arabic",
-      },
-    },
-    {
-      "@type": "ListItem",
-      position: 3,
-      item: {
-        "@type": "CreativeWork",
-        name: "UK Transport & Removals — Conversion-Focused Web Platform",
-        description:
-          "Next.js / React web platform for a UK transport and removals company. SSG/ISR pages for SEO, real-time quote engine, Firebase backend, and high-conversion landing pages.",
-        url: `${SITE_CONFIG.url}/#uk-transport`,
-        creator: { "@type": "Organization", name: SITE_CONFIG.name },
-        keywords:
-          "Next.js, React, Firebase, SEO, UK Transport, Removals, Conversion Optimisation",
-      },
-    },
-    {
-      "@type": "ListItem",
-      position: 4,
-      item: {
-        "@type": "CreativeWork",
-        name: "Chapeau ERP — Field Sales Representative System",
-        description:
-          "Flutter mobile ERP for field sales reps with customer management, order capture, real-time inventory visibility, GPS visit tracking, and Firebase backend. Handles offline-first sync.",
-        url: `${SITE_CONFIG.url}/#chapeau`,
-        creator: { "@type": "Organization", name: SITE_CONFIG.name },
-        keywords:
-          "Flutter, Firebase, ERP, Sales Force Automation, Order Management, Offline-First",
-      },
-    },
+      position: i + 4,
+      item: { "@type": "CreativeWork", name: w.name, description: w.desc, url: `${SITE_CONFIG.url}/works`, creator: { "@type": "Organization", name: SITE_CONFIG.name } },
+    })),
   ],
 };
- 
+
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -347,16 +327,17 @@ const breadcrumbSchema = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_CONFIG.url}/` },
-    { "@type": "ListItem", position: 2, name: "Work", item: `${SITE_CONFIG.url}/#work` },
+    { "@type": "ListItem", position: 2, name: "Products & Subscriptions", item: `${SITE_CONFIG.url}/#products` },
+    { "@type": "ListItem", position: 3, name: "Studio Works", item: `${SITE_CONFIG.url}/works` },
     {
       "@type": "ListItem",
-      position: 3,
+      position: 4,
       name: "Services",
       item: `${SITE_CONFIG.url}/works#services`,
     },
     {
       "@type": "ListItem",
-      position: 4,
+      position: 5,
       name: "Contact",
       item: `${SITE_CONFIG.url}/#contact`,
     },
@@ -430,6 +411,8 @@ export default function App() {
   }, [location.pathname, location.hash]);
 
   const [legalModalOpen, setLegalModalOpen] = useState(false);
+  const [legalLoaded, setLegalLoaded] = useState(false);
+  useEffect(() => { if (legalModalOpen) setLegalLoaded(true); }, [legalModalOpen]);
   const [activeLegalTab, setActiveLegalTab] = useState("privacy");
 
   const handleOpenLegal = useCallback((tab: string) => {
@@ -473,24 +456,25 @@ export default function App() {
 
   return (
     <CartProvider>
+    <SnackbarProvider>
     <div
       className="min-h-screen"
-      style={{ backgroundColor: "var(--md-surface)" }}
+      style={{ backgroundColor: "var(--md-sys-color-surface)", color: "var(--md-sys-color-on-surface)" }}
     >
       {/* Skip-to-content link for accessibility */}
       <a
-        href="#work"
+        href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg"
-        style={{ background: "var(--md-primary)", color: "var(--md-on-primary)" }}
+        style={{ background: "var(--md-sys-color-primary)", color: "var(--md-sys-color-on-primary)" }}
       >
         Skip to main content
       </a>
 
       <Navigation onOpenLegal={handleOpenLegal} />
 
-      <main role="main" className="overflow-x-clip" itemScope itemType="https://schema.org/WebPage">
+      <main id="main" tabIndex={-1} role="main" className="outline-none overflow-x-clip" itemScope itemType="https://schema.org/WebPage">
         <Routes>
-          <Route path="/works" element={<WorksPage />} />
+          <Route path="/works" element={<Suspense fallback={<div className="min-h-screen" aria-busy="true" />}><WorksPage /></Suspense>} />
           <Route
             path="*"
             element={
@@ -506,15 +490,20 @@ export default function App() {
         <Contact onOpenLegal={handleOpenLegal} />
       </main>
 
-      <LegalModal
-        isOpen={legalModalOpen}
-        initialTab={activeLegalTab}
-        onClose={() => setLegalModalOpen(false)}
-      />
+      {legalLoaded && (
+        <Suspense fallback={null}>
+          <LegalModal
+            isOpen={legalModalOpen}
+            initialTab={activeLegalTab}
+            onClose={() => setLegalModalOpen(false)}
+          />
+        </Suspense>
+      )}
       <CartDrawer />
       <CheckoutModal />
       <PaymentResult />
     </div>
+    </SnackbarProvider>
     </CartProvider>
   );
 }

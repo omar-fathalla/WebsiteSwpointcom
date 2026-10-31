@@ -9,7 +9,9 @@ export function WorksPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!window.location.hash) window.scrollTo(0, 0);
+    const h = window.location.hash;
+    if (!h) window.scrollTo(0, 0);
+    else setTimeout(() => document.querySelector(h)?.scrollIntoView({ block: "start" }), 120);
     // Footer / in-page "#section" anchors that only exist on the homepage → go to /#section.
     const onClick = (e: MouseEvent) => {
       const a = (e.target as HTMLElement).closest?.("a[href^='#']") as HTMLAnchorElement | null;
@@ -26,13 +28,11 @@ export function WorksPage() {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-6 pt-28">
-        <p className="text-xs font-semibold uppercase tracking-wider text-[var(--md-on-surface-variant)] mb-2">Switch Point · Studio Works &amp; Services</p>
-        <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--md-primary)] hover:underline">
-          <ArrowLeft size={16} /> Back to home
-        </Link>
+      <div className="md-container pt-24 md:pt-28">
+        <Link to="/" className="md-btn md-btn-text has-icon -ml-3"><ArrowLeft /> Back to home</Link>
+        <p className="mt-2 text-title-small text-on-surface-variant">Switch Point · Studio Works &amp; Services</p>
       </div>
-      <div style={{ marginTop: "-48px" }}>
+      <div className="-mt-10 md:-mt-16">
         <Projects />
       </div>
       <TechStack />
