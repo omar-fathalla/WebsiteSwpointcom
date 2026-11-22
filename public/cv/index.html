@@ -448,6 +448,7 @@ a.chip { position: relative; cursor: pointer; }
 
 .project-grid { display: grid; gap: 16px; }
 @media (min-width: 600px) { .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 840px) and (max-width: 1199px) { .project-grid { grid-template-columns: minmax(0, 1fr); } }
 .project { display: flex; flex-direction: column; gap: 12px; }
 .project--wide { grid-column: 1 / -1; }
 .project__name { font: 400 22px/28px var(--md-ref-typeface-brand); letter-spacing: 0; }
@@ -618,8 +619,8 @@ a.chip { position: relative; cursor: pointer; }
             </div>
             <div class="skill-group">
               <h3>Infrastructure &amp; Cloud</h3>
-              <ul class="chip-set"><li class="chip chip--skill">Firebase</li><li class="chip chip--skill">Google Cloud Platform (GCP)</li></ul>
-              <p class="skill-group__detail body-medium supporting">Firebase (Auth, Firestore, Hosting, Cloud Functions).</p>
+              <ul class="chip-set"><li class="chip chip--skill">Firebase</li><li class="chip chip--skill">Google Cloud (GCP)</li></ul>
+              <p class="skill-group__detail body-medium supporting">Firebase (Auth, Firestore, Hosting, Cloud Functions), Google Cloud Platform (GCP).</p>
             </div>
             <div class="skill-group">
               <h3>Collaboration</h3>
